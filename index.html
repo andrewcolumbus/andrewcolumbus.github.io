@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<!-- Redirect the github.io host to the canonical custom domain (GitHub also does this server-side). -->
+<script>
+  (function () {
+    if (location.hostname === "andrewcolumbus.github.io") {
+      location.replace("https://andrewcolumbus.me" + location.pathname + location.search + location.hash);
+    }
+  })();
+</script>
+<link rel="canonical" href="https://andrewcolumbus.me/">
 <title>Andrew Columbus</title>
 <meta name="description" content="Andrew Columbus - founder of Immersivegroup, making immersive experiences accessible and scalable.">
 <meta name="theme-color" content="#67789a">
@@ -11,7 +20,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Andrew Columbus">
 <meta property="og:description" content="Founder of Immersivegroup - making immersive experiences accessible and scalable.">
-<meta property="og:url" content="https://andrewcolumbus.github.io">
+<meta property="og:url" content="https://andrewcolumbus.me">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Andrew Columbus">
 <meta name="twitter:description" content="Founder of Immersivegroup - making immersive experiences accessible and scalable.">
