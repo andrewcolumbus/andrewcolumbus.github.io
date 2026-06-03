@@ -1,1 +1,5 @@
 .DS_Store
+
+# Local-only docs (not published)
+CLAUDE.md
+agents.md
