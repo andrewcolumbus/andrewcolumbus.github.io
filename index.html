@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- Redirect the github.io host to the canonical custom domain (GitHub also does this server-side). -->
 <script>
   (function () {
@@ -31,10 +31,11 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="screen">
 
-    <!-- Status bar -->
-    <div class="statusbar">
+    <!-- Status bar (decorative iOS chrome) -->
+    <div class="statusbar" aria-hidden="true">
       <div class="sb-left">
         <span class="signal"><i></i><i></i><i></i><i></i><i></i></span>
         <img class="carrier-logo" src="assets/immersivegroup.png" alt="">
@@ -45,171 +46,267 @@
     </div>
 
     <!-- Nav bar -->
-    <div class="navbar"><h1>Andrew Columbus</h1></div>
+    <header class="navbar"><h1>Andrew Columbus</h1></header>
 
-    <div class="content">
+    <main id="main-content" class="content">
 
       <!-- Profile header -->
       <div class="profile">
-        <div class="avatar">
-          <img id="headshot" alt="Andrew Columbus" style="display:none">
-          <span class="initials" id="initials">AC</span>
+        <div class="avatar" role="img" aria-label="Andrew Columbus">
+          <img id="headshot" alt="" style="display:none">
+          <span class="initials" id="initials" aria-hidden="true">AC</span>
         </div>
         <p class="name">Andrew Columbus</p>
         <p class="tagline">Founder, Immersivegroup</p>
       </div>
 
       <!-- About -->
-      <div class="section-header">About</div>
-      <div class="group">
-        <div class="cell prose">
-          <p>Hey, I'm Andrew. I'm the founder of Immersivegroup, where I'm
-          on a mission to make immersive experiences accessible and scalable.</p>
-          <p>Before this I was a sales executive and product manager at Luxedo,
-          a projection-mapping company. And before that, I taught English in
-          Reims, France.</p>
-          <p class="water">When I'm not working, I'm likely to be near or in a body of water. &#127754;</p>
-        </div>
-      </div>
+      <h2 class="section-header">About</h2>
+      <ul class="group" role="list">
+        <li>
+          <div class="cell prose">
+            <p>Hi, I'm Andrew! I'm the founder of Immersivegroup, where I'm
+            on a mission to make immersive experiences accessible and scalable.</p>
+            <p>Before this I was a sales executive and product manager at Luxedo,
+            a projection-mapping company. And before that, I taught English in
+            Reims, France.</p>
+            <p class="water">When I'm not working, I'm likely to be near or in a body of water. &#127754;</p>
+          </div>
+        </li>
+      </ul>
 
       <!-- Details -->
-      <div class="section-header">Details</div>
-      <div class="group">
-        <div class="cell iconcell" id="age-cell">
-          <span class="app-icon emoji">&#127874;</span>
-          <span class="label">Age</span>
-          <span class="value" id="age-value">--</span>
-        </div>
-        <div class="cell iconcell">
-          <span class="app-icon emoji">&#128205;</span>
-          <span class="label">Based</span>
-          <span class="value">Minneapolis, MN</span>
-        </div>
-      </div>
+      <h2 class="section-header">Details</h2>
+      <ul class="group" role="list">
+        <li>
+          <div class="cell iconcell" id="age-cell">
+            <span class="app-icon emoji" aria-hidden="true">&#127874;</span>
+            <span class="label">Age</span>
+            <span class="value" id="age-value">--</span>
+          </div>
+        </li>
+        <li>
+          <div class="cell iconcell">
+            <span class="app-icon emoji" aria-hidden="true">&#128205;</span>
+            <span class="label">Based</span>
+            <span class="value">Minneapolis, MN</span>
+          </div>
+        </li>
+      </ul>
 
       <!-- Work -->
-      <div class="section-header">Work</div>
-      <div class="group">
-        <a class="cell stack-badge disclosure" href="https://immersive-group.com" target="_blank" rel="noopener">
-          <span class="app-icon"><img class="fav" src="assets/immersivegroup.png" alt=""></span>
-          <span class="cell-text">
-            <span class="label">Immersivegroup</span>
-            <span class="sub">Founder - immersive experiences, accessible &amp; scalable</span>
-          </span>
-          <span class="badge">Current</span>
-        </a>
-        <a class="cell iconcell disclosure" id="royalston-cell" href="#" role="button" aria-label="Royalston Square - view links">
-          <span class="app-icon"><img class="fav" src="assets/anticstudios.png" alt=""></span>
-          <span class="cell-text">
-            <span class="label">Royalston Square</span>
-            <span class="sub">Led the 36-projector immersive venue - hosted Ferrari, Red Bull &amp; more</span>
-          </span>
-        </a>
-        <a class="cell iconcell disclosure" target="_blank" rel="noopener">
-          <span class="app-icon"><img class="fav" src="assets/luxedo.png" alt=""></span>
-          <span class="cell-text">
-            <span class="label">Luxedo</span>
-            <span class="sub">Sales executive &amp; product manager - projection mapping</span>
-          </span>
-        </a>
-        <a class="cell iconcell disclosure" id="france-cell" href="#" role="button" aria-label="France Education International - view details">
-          <span class="app-icon"><img class="fav" src="assets/franceeducation.png" alt=""></span>
-          <span class="cell-text">
-            <span class="label">France Education International</span>
-            <span class="sub">English teaching assistant - taught English in France</span>
-          </span>
-        </a>
-      </div>
+      <h2 class="section-header">Work</h2>
+      <ul class="group" role="list">
+        <li>
+          <a class="cell stack-badge disclosure" href="https://immersive-group.com" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="assets/immersivegroup.png" alt=""></span>
+            <span class="cell-text">
+              <span class="label">Immersivegroup</span>
+              <span class="sub">Founder - immersive experiences, accessible &amp; scalable</span>
+            </span>
+            <span class="badge">Current</span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <button class="cell iconcell disclosure" id="royalston-cell" type="button" aria-haspopup="dialog" aria-label="Royalston Square - view links">
+            <span class="app-icon"><img class="fav" src="assets/anticstudios.png" alt=""></span>
+            <span class="cell-text">
+              <span class="label">Royalston Square</span>
+              <span class="sub">Led the 36-projector immersive venue - hosted Ferrari, Red Bull &amp; more</span>
+            </span>
+          </button>
+        </li>
+        <li>
+          <a class="cell iconcell disclosure" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="assets/luxedo.png" alt=""></span>
+            <span class="cell-text">
+              <span class="label">Luxedo</span>
+              <span class="sub">Sales executive &amp; product manager - projection mapping</span>
+            </span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <button class="cell iconcell disclosure" id="france-cell" type="button" aria-haspopup="dialog" aria-label="France Education International - view details">
+            <span class="app-icon"><img class="fav" src="assets/franceeducation.png" alt=""></span>
+            <span class="cell-text">
+              <span class="label">France Education International</span>
+              <span class="sub">English teaching assistant - taught English in France</span>
+            </span>
+          </button>
+        </li>
+      </ul>
 
       <!-- Education -->
-      <div class="section-header">Education</div>
-      <div class="group">
-        <a class="cell iconcell disclosure" id="iupui-cell" href="#" role="button" aria-label="IUPUI - view details">
-          <span class="app-icon"><img class="fav" src="assets/iupui.png" alt="IUPUI"></span>
-          <span class="cell-text">
-            <span class="label">IUPUI</span>
-            <span class="sub">B.A. French &middot; Class of 2023</span>
-          </span>
-        </a>
-      </div>
+      <h2 class="section-header">Education</h2>
+      <ul class="group" role="list">
+        <li>
+          <button class="cell iconcell disclosure" id="iupui-cell" type="button" aria-haspopup="dialog" aria-label="IUPUI - view details">
+            <span class="app-icon"><img class="fav" src="assets/iupui.png" alt="IUPUI"></span>
+            <span class="cell-text">
+              <span class="label">IUPUI</span>
+              <span class="sub">B.A. French &middot; Class of 2023</span>
+            </span>
+          </button>
+        </li>
+      </ul>
 
       <!-- Contact -->
-      <div class="section-header">Contact</div>
-      <div class="group">
-        <a class="cell iconcell disclosure" href="https://www.linkedin.com/in/andrewcolumbus/" target="_blank" rel="noopener">
-          <span class="app-icon"><img class="fav" src="assets/linkedin.png" alt=""></span>
-          <span class="label">LinkedIn</span>
-          <span class="value">andrewcolumbus</span>
-        </a>
-        <a class="cell iconcell disclosure" href="https://instagram.com/drewcolumbus" target="_blank" rel="noopener">
-          <span class="app-icon"><img class="fav" src="assets/instagram.png" alt=""></span>
-          <span class="label">Instagram</span>
-          <span class="value">@drewcolumbus</span>
-        </a>
-        <a class="cell iconcell disclosure" href="https://immersive-group.com" target="_blank" rel="noopener">
-          <span class="app-icon"><img class="fav" src="assets/immersivegroup.png" alt=""></span>
-          <span class="label">Immersivegroup</span>
-          <span class="value">immersive-group.com</span>
-        </a>
-      </div>
+      <h2 class="section-header">Contact</h2>
+      <ul class="group" role="list">
+        <li>
+          <a class="cell iconcell disclosure" href="https://www.linkedin.com/in/andrewcolumbus/" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="assets/linkedin.png" alt=""></span>
+            <span class="label">LinkedIn</span>
+            <span class="value">andrewcolumbus</span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <a class="cell iconcell disclosure" href="https://instagram.com/drewcolumbus" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="assets/instagram.png" alt=""></span>
+            <span class="label">Instagram</span>
+            <span class="value">@drewcolumbus</span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <a class="cell iconcell disclosure" href="https://immersive-group.com" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="assets/immersivegroup.png" alt=""></span>
+            <span class="label">Immersivegroup</span>
+            <span class="value">immersive-group.com</span>
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+      </ul>
 
-      <div class="footer">
+      <!-- About this site -->
+      <h2 class="section-header">About this site</h2>
+      <ul class="group" role="list">
+        <li>
+          <button class="cell iconcell disclosure" id="a11y-cell" type="button" aria-haspopup="dialog" aria-label="Accessibility statement">
+            <span class="app-icon emoji" aria-hidden="true">&#9855;</span>
+            <span class="cell-text">
+              <span class="label">Accessibility</span>
+              <span class="sub">Our commitment &amp; standards</span>
+            </span>
+          </button>
+        </li>
+      </ul>
+
+      <footer class="footer">
         <p>Made with &#10084;&#65039; in Minneapolis, Knoxville, Reims, Laramie and Chicago.</p>
-      </div>
+      </footer>
 
-    </div>
+    </main>
 
     <!-- Royalston Square drill-down submenu (iOS push navigation) -->
-    <div class="detail-view" id="royalston-detail" aria-hidden="true">
+    <section class="detail-view" id="royalston-detail" role="dialog" aria-modal="true" aria-labelledby="royalston-title" aria-hidden="true">
       <div class="navbar">
         <button class="back-btn" id="royalston-back" type="button">Work</button>
-        <h1>Royalston Square</h1>
+        <h1 id="royalston-title">Royalston Square</h1>
       </div>
       <div class="content">
-        <div class="section-header">Press &amp; Links</div>
-        <div class="group">
-          <a class="cell iconcell disclosure" href="https://eventsbyentourage.com/weddings/the-royalston/" target="_blank" rel="noopener">
-            <span class="app-icon"><img class="fav" src="assets/entourage.svg" alt=""></span>
-            <span class="cell-text">
-              <span class="label">Events by Entourage</span>
-              <span class="sub">The Royalston - weddings &amp; events</span>
-            </span>
-          </a>
-          <a class="cell iconcell disclosure" href="https://northloop.org/immersive-entertainment-venue-now-booking-special-events/" target="_blank" rel="noopener">
-            <span class="app-icon"><img class="fav" src="assets/northloop.png" alt=""></span>
-            <span class="cell-text">
-              <span class="label">North Loop</span>
-              <span class="sub">Immersive entertainment venue now booking</span>
-            </span>
-          </a>
-          <a class="cell iconcell disclosure" href="https://kstp.com/kstp-news/top-news/new-event-venue-brings-a-taste-of-vegas-to-minneapolis/" target="_blank" rel="noopener">
-            <span class="app-icon"><img class="fav" src="assets/kstp.png" alt=""></span>
-            <span class="cell-text">
-              <span class="label">KSTP 5 Eyewitness News</span>
-              <span class="sub">A taste of Vegas comes to Minneapolis</span>
-            </span>
-          </a>
-        </div>
+        <h2 class="section-header">Press &amp; Links</h2>
+        <ul class="group" role="list">
+          <li>
+            <a class="cell iconcell disclosure" href="https://eventsbyentourage.com/weddings/the-royalston/" target="_blank" rel="noopener">
+              <span class="app-icon"><img class="fav" src="assets/entourage.svg" alt=""></span>
+              <span class="cell-text">
+                <span class="label">Events by Entourage</span>
+                <span class="sub">The Royalston - weddings &amp; events</span>
+              </span>
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </li>
+          <li>
+            <a class="cell iconcell disclosure" href="https://northloop.org/immersive-entertainment-venue-now-booking-special-events/" target="_blank" rel="noopener">
+              <span class="app-icon"><img class="fav" src="assets/northloop.png" alt=""></span>
+              <span class="cell-text">
+                <span class="label">North Loop</span>
+                <span class="sub">Immersive entertainment venue now booking</span>
+              </span>
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </li>
+          <li>
+            <a class="cell iconcell disclosure" href="https://kstp.com/kstp-news/top-news/new-event-venue-brings-a-taste-of-vegas-to-minneapolis/" target="_blank" rel="noopener">
+              <span class="app-icon"><img class="fav" src="assets/kstp.png" alt=""></span>
+              <span class="cell-text">
+                <span class="label">KSTP 5 Eyewitness News</span>
+                <span class="sub">A taste of Vegas comes to Minneapolis</span>
+              </span>
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </li>
+        </ul>
       </div>
-    </div>
+    </section>
+
+    <!-- Accessibility statement drill-down (iOS push navigation) -->
+    <section class="detail-view" id="a11y-detail" role="dialog" aria-modal="true" aria-labelledby="a11y-title" aria-hidden="true">
+      <div class="navbar">
+        <button class="back-btn" id="a11y-back" type="button">Back</button>
+        <h1 id="a11y-title">Accessibility</h1>
+      </div>
+      <div class="content">
+        <ul class="group" role="list">
+          <li>
+            <div class="cell prose">
+              <p>I want everyone to be able to use this site, including people who
+              rely on assistive technology.</p>
+            </div>
+          </li>
+        </ul>
+
+        <h2 class="section-header">What are we doing?</h2>
+        <ul class="group" role="list">
+          <li>
+            <div class="cell prose">
+              <p>This site aims to follow the Web Content Accessibility Guidelines
+              (WCAG) 2.2 at Level AA. It uses semantic landmarks and headings, works
+              fully from the keyboard, keeps focus inside dialogs and returns it when
+              they close, labels every icon and image, respects your system
+              &ldquo;reduce motion&rdquo; setting, and supports browser zoom and text
+              resizing.</p>
+            </div>
+          </li>
+        </ul>
+
+        <h2 class="section-header">How are we doing?</h2>
+        <ul class="group" role="list">
+          <li>
+            <div class="cell prose">
+              <p>Most of the experience meets that bar. Because the design recreates
+              the look of iOS 6, a few labels and secondary lines keep the original
+              low-contrast gray styling and may not reach AA contrast &mdash; that's a
+              deliberate aesthetic choice. All content stays readable with browser
+              zoom, and every control is keyboard- and screen-reader-accessible. I keep
+              working to improve it.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
   </div>
 
   <!-- IUPUI popup -->
   <div class="modal-backdrop" id="iupui-modal" aria-hidden="true">
-    <div class="alert" role="dialog" aria-modal="true" aria-label="IUPUI">
-      <img class="alert-logo" src="assets/IUPUI.jpeg" alt="IUPUI">
-      <div class="alert-title">IUPUI</div>
-      <div class="alert-msg">Indiana University&ndash;Purdue University Indianapolis<br>B.A. French &middot; Class of 2023</div>
+    <div class="alert" role="dialog" aria-modal="true" aria-labelledby="iupui-title" aria-describedby="iupui-desc">
+      <img class="alert-logo" src="assets/IUPUI.jpeg" alt="">
+      <div class="alert-title" id="iupui-title">IUPUI</div>
+      <div class="alert-msg" id="iupui-desc">Indiana University&ndash;Purdue University Indianapolis<br>B.A. French &middot; Class of 2023</div>
       <button class="alert-btn" id="iupui-close" type="button">OK</button>
     </div>
   </div>
 
   <!-- France Education International popup -->
   <div class="modal-backdrop" id="france-modal" aria-hidden="true">
-    <div class="alert" role="dialog" aria-modal="true" aria-label="France Education International">
-      <img class="alert-logo" src="assets/france.jpeg" alt="France Education International">
-      <div class="alert-title">France Education International</div>
-      <div class="alert-msg">English teaching assistant</div>
+    <div class="alert" role="dialog" aria-modal="true" aria-labelledby="france-title" aria-describedby="france-desc">
+      <img class="alert-logo" src="assets/france.jpeg" alt="">
+      <div class="alert-title" id="france-title">France Education International</div>
+      <div class="alert-msg" id="france-desc">English teaching assistant</div>
       <button class="alert-btn" id="france-close" type="button">OK</button>
     </div>
   </div>

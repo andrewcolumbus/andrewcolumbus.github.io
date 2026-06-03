@@ -149,54 +149,125 @@
     setTimeout(celebrate, 700);
   }
 
-  // ---------- Royalston Square drill-down submenu ----------
-  var royCell = document.getElementById("royalston-cell");
-  var royDetail = document.getElementById("royalston-detail");
-  var royBack = document.getElementById("royalston-back");
-  function openDetail() {
-    window.scrollTo(0, 0);
-    royDetail.classList.add("open");
-    royDetail.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-  }
-  function closeDetail() {
-    royDetail.classList.remove("open");
-    royDetail.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
-  }
-  if (royCell) {
-    royCell.addEventListener("click", function (e) { e.preventDefault(); openDetail(); });
-  }
-  if (royBack) { royBack.addEventListener("click", closeDetail); }
+  // ---------- Dialog / focus management (drill-down screens + alert popups) ----------
+  // Modern browsers expose the `inert` property; we use it so that everything
+  // outside the open overlay is neither focusable nor exposed to assistive tech.
+  // Keeping the closed overlays inert also keeps the off-screen drill-down links
+  // out of the tab order.
+  var mainNavbar = document.querySelector("header.navbar");
+  var mainContent = document.getElementById("main-content");
+  var overlays = [
+    document.getElementById("royalston-detail"),
+    document.getElementById("a11y-detail"),
+    document.getElementById("iupui-modal"),
+    document.getElementById("france-modal")
+  ].filter(Boolean);
 
-  // ---------- Alert-style popups (IUPUI, France Education International) ----------
-  function openModal(modal) {
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
+  var activeOverlay = null;
+  var lastFocused = null;
+
+  function applyInert(active) {
+    var bg = !!active; // background goes inert only while an overlay is open
+    if (mainNavbar) mainNavbar.inert = bg;
+    if (mainContent) mainContent.inert = bg;
+    overlays.forEach(function (o) { o.inert = (o !== active); });
   }
-  function closeModal(modal) {
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
+
+  function getFocusable(container) {
+    var sel = 'a[href], button:not([disabled]), input:not([disabled]), ' +
+      'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    var nodes = container.querySelectorAll(sel);
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      if (n.offsetWidth || n.offsetHeight || n.getClientRects().length) out.push(n);
+    }
+    return out;
   }
+
+  function openOverlay(overlay, focusTarget, scrollTop) {
+    if (!overlay) return;
+    lastFocused = document.activeElement;       // remember the trigger
+    if (scrollTop) window.scrollTo(0, 0);
+    overlay.classList.add("open");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+    applyInert(overlay);
+    activeOverlay = overlay;
+    var target = focusTarget || getFocusable(overlay)[0] || overlay;
+    if (target && target.focus) target.focus();
+  }
+
+  function closeOverlay(overlay) {
+    if (!overlay) return;
+    overlay.classList.remove("open");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+    applyInert(null);
+    activeOverlay = null;
+    if (lastFocused && lastFocused.focus) lastFocused.focus(); // return focus
+    lastFocused = null;
+  }
+
+  function trapTab(e, container) {
+    var f = getFocusable(container);
+    if (!f.length) { e.preventDefault(); return; }
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first || !container.contains(document.activeElement)) {
+        e.preventDefault(); last.focus();
+      }
+    } else {
+      if (document.activeElement === last || !container.contains(document.activeElement)) {
+        e.preventDefault(); first.focus();
+      }
+    }
+  }
+
+  // One key handler drives whichever overlay is open: Escape closes, Tab is trapped.
+  document.addEventListener("keydown", function (e) {
+    if (!activeOverlay) return;
+    if (e.key === "Escape") { e.preventDefault(); closeOverlay(activeOverlay); }
+    else if (e.key === "Tab") { trapTab(e, activeOverlay); }
+  });
+
+  // Drill-down screens (iOS push navigation): Royalston Square, Accessibility.
+  function wireDetail(cellId, detailId, backId) {
+    var cell = document.getElementById(cellId);
+    var detail = document.getElementById(detailId);
+    var back = document.getElementById(backId);
+    if (cell && detail) {
+      cell.addEventListener("click", function () { openOverlay(detail, back, true); });
+    }
+    if (back && detail) {
+      back.addEventListener("click", function () { closeOverlay(detail); });
+    }
+  }
+  wireDetail("royalston-cell", "royalston-detail", "royalston-back");
+  wireDetail("a11y-cell", "a11y-detail", "a11y-back");
+
+  // Alert-style popups (IUPUI, France Education International).
   function wireModal(cellId, modalId, closeId) {
     var cell = document.getElementById(cellId);
     var modal = document.getElementById(modalId);
     var closeBtn = document.getElementById(closeId);
-    if (cell) {
-      cell.addEventListener("click", function (e) { e.preventDefault(); openModal(modal); });
+    if (cell && modal) {
+      cell.addEventListener("click", function () { openOverlay(modal, closeBtn); });
     }
-    if (closeBtn) { closeBtn.addEventListener("click", function () { closeModal(modal); }); }
+    if (closeBtn && modal) {
+      closeBtn.addEventListener("click", function () { closeOverlay(modal); });
+    }
     if (modal) {
       modal.addEventListener("click", function (e) {
-        if (e.target === modal) closeModal(modal);
+        if (e.target === modal) closeOverlay(modal); // click the dimmed backdrop
       });
     }
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && modal && modal.classList.contains("open")) closeModal(modal);
-    });
   }
   wireModal("iupui-cell", "iupui-modal", "iupui-close");
   wireModal("france-cell", "france-modal", "france-close");
+
+  // Default state: main UI active, every drill-down / popup inert and hidden.
+  applyInert(null);
 
   // ---------- Favicon fallback (neutral rounded square if one fails) ----------
   var FAV_FALLBACK = "data:image/svg+xml," +
