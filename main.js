@@ -154,6 +154,7 @@
   // outside the open overlay is neither focusable nor exposed to assistive tech.
   // Keeping the closed overlays inert also keeps the off-screen drill-down links
   // out of the tab order.
+  var screenEl = document.querySelector(".screen");
   var mainNavbar = document.querySelector("header.navbar");
   var mainContent = document.getElementById("main-content");
   var overlays = [
@@ -194,8 +195,12 @@
     document.body.classList.add("modal-open");
     applyInert(overlay);
     activeOverlay = overlay;
+    // The off-screen (translateX(100%)) panels make .screen horizontally scrollable;
+    // focusing a control while a panel is still sliding in would scroll .screen sideways.
+    // Reset any stray scroll and focus without triggering scroll-into-view.
+    if (screenEl) screenEl.scrollLeft = 0;
     var target = focusTarget || getFocusable(overlay)[0] || overlay;
-    if (target && target.focus) target.focus();
+    if (target && target.focus) target.focus({ preventScroll: true });
   }
 
   function closeOverlay(overlay) {
