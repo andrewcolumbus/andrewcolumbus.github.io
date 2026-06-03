@@ -1,7 +1,863 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Andrew Columbus</title>
+<meta name="description" content="Andrew Columbus - founder of Immersivegroup, making immersive experiences accessible and scalable.">
+<meta name="theme-color" content="#67789a">
 
+<!-- Open Graph / sharing -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Andrew Columbus">
+<meta property="og:description" content="Founder of Immersivegroup - making immersive experiences accessible and scalable.">
+<meta property="og:url" content="https://andrewcolumbus.github.io">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Andrew Columbus">
+<meta name="twitter:description" content="Founder of Immersivegroup - making immersive experiences accessible and scalable.">
+
+<!-- Favicon: glossy blue "A" drawn inline, no external request -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%238fa3c4'/%3E%3Cstop offset='1' stop-color='%23566a8e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='46' font-family='Helvetica,Arial' font-size='42' font-weight='bold' fill='%23fff' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+
+<style>
+  /* ============================================================
+     iOS 6 skeuomorphic personal site - Andrew Columbus
+     All texture/chrome rendered in CSS. No external assets.
+     ============================================================ */
+
+  :root {
+    --pinstripe-base: #c5ccd3;
+    --pinstripe-line: #bcc3cb;
+    --cell-bg: #ffffff;
+    --cell-bg-active: #027aff;
+    --separator: #c8c7cc;
+    --text: #000000;
+    --text-detail: #8e8e93;
+    --text-blue: #007aff;
+    --section-header: #6d6d72;
+    --navbar-top: #97a6bf;
+    --navbar-bottom: #67789a;
+    --navbar-border: #2b3a52;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.4;
+    color: var(--text);
+    /* iOS 6 grouped table view pinstripe */
+    background-color: var(--pinstripe-base);
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--pinstripe-base) 0,
+      var(--pinstripe-base) 3px,
+      var(--pinstripe-line) 3px,
+      var(--pinstripe-line) 4px
+    );
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+  }
+
+  /* The "device screen": centered column on desktop, full width on phones */
+  .screen {
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 22px rgba(0,0,0,0.18);
+    background-color: var(--pinstripe-base);
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--pinstripe-base) 0,
+      var(--pinstripe-base) 3px,
+      var(--pinstripe-line) 3px,
+      var(--pinstripe-line) 4px
+    );
+    overflow: hidden;
+  }
+
+  /* ---------- Status bar ---------- */
+  .statusbar {
+    height: 20px;
+    background: linear-gradient(to bottom, #e9ebee 0%, #c8ccd2 100%);
+    border-bottom: 1px solid #9aa0a8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a1a;
+    position: relative;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .statusbar .sb-left { display: flex; align-items: center; gap: 5px; }
+  .statusbar .carrier-logo {
+    width: 14px; height: 14px; display: block;
+    border-radius: 3px; object-fit: contain;
+  }
+  .statusbar .sb-time {
+    position: absolute; left: 0; right: 0; text-align: center;
+    font-weight: 700; pointer-events: none;
+  }
+  .signal { display: flex; align-items: flex-end; gap: 1px; height: 10px; }
+  .signal i { width: 3px; background: #1a1a1a; border-radius: 1px; display: block; }
+  .signal i:nth-child(1){ height: 4px; }
+  .signal i:nth-child(2){ height: 6px; }
+  .signal i:nth-child(3){ height: 8px; }
+  .signal i:nth-child(4){ height: 10px; }
+  .signal i:nth-child(5){ height: 10px; opacity: 0.3; }
+  .battery {
+    width: 24px; height: 11px; border: 1px solid #1a1a1a; border-radius: 2px;
+    position: relative; padding: 1px;
+  }
+  .battery::after {
+    content: ""; position: absolute; right: -3px; top: 3px;
+    width: 2px; height: 5px; background: #1a1a1a; border-radius: 0 1px 1px 0;
+  }
+  .battery span { display: block; height: 100%; width: 82%; background: #1a1a1a; border-radius: 1px; }
+
+  /* ---------- Nav bar ---------- */
+  .navbar {
+    height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 50%),
+      linear-gradient(to bottom, var(--navbar-top) 0%, var(--navbar-bottom) 100%);
+    border-bottom: 1px solid var(--navbar-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .navbar h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.45);
+    letter-spacing: -0.2px;
+  }
+
+  /* ---------- Scrollable content ---------- */
+  .content { padding: 10px 0 28px; }
+
+  /* ---------- Profile header (app-icon style photo + name) ---------- */
+  .profile { text-align: center; padding: 18px 16px 6px; }
+  .avatar {
+    width: 84px; height: 84px; margin: 0 auto 10px;
+    border-radius: 18px;
+    background: linear-gradient(to bottom, #8fa3c4, #566a8e);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.6),
+      0 1px 3px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .avatar .initials {
+    font-size: 40px; font-weight: 700; color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+  }
+  /* iOS app-icon gloss */
+  .avatar::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 48%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+    border-radius: 18px 18px 50% 50% / 18px 18px 22px 22px;
+    pointer-events: none;
+  }
+  .profile .name {
+    font-size: 24px; font-weight: 700; margin: 0;
+    color: #2b2b2b; text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .profile .tagline {
+    font-size: 14px; color: #5b6470; margin: 3px 0 0;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  }
+
+  /* ---------- Grouped table view ---------- */
+  .section-header {
+    margin: 24px 0 6px;
+    padding: 0 26px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--section-header);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .group {
+    margin: 0 10px;
+    background: var(--cell-bg);
+    border-radius: var(--radius);
+    border: 1px solid #a9abae;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+  }
+
+  .cell {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 11px 14px;
+    background: var(--cell-bg);
+    position: relative;
+    text-decoration: none;
+    color: var(--text);
+  }
+  /* hairline separator inset from the left, iOS style */
+  .cell + .cell::before {
+    content: "";
+    position: absolute; left: 14px; right: 0; top: 0;
+    height: 1px; background: var(--separator);
+  }
+  .cell .label { flex: 0 0 auto; font-size: 17px; }
+  .cell .value {
+    margin-left: auto;
+    color: var(--text-detail);
+    font-size: 17px;
+    text-align: right;
+    padding-left: 10px;
+  }
+  a.cell .label { color: var(--text); }
+  a.cell .value { color: var(--text-blue); }
+
+  /* disclosure chevron */
+  a.cell.disclosure { padding-right: 30px; }
+  a.cell.disclosure::after {
+    content: "";
+    position: absolute; right: 14px; top: 50%;
+    width: 8px; height: 8px; margin-top: -5px;
+    border-right: 2px solid #c0c0c5;
+    border-top: 2px solid #c0c0c5;
+    transform: rotate(45deg);
+  }
+  /* active highlight (touch / hover) */
+  a.cell:active, a.cell.tapped {
+    background: var(--cell-bg-active);
+  }
+  a.cell:active .label, a.cell.tapped .label,
+  a.cell:active .value, a.cell.tapped .value { color: #fff; }
+  a.cell:active::after, a.cell.tapped::after { border-color: #fff; }
+
+  /* Age cell is only interactive on the actual birthday (June 8) */
+  .cell.birthday-cell { cursor: pointer; }
+  .cell.birthday-cell .value { color: var(--text-blue); }
+  .cell.birthday-cell:active, .cell.birthday-cell.tapped { background: var(--cell-bg-active); }
+  .cell.birthday-cell:active .label, .cell.birthday-cell.tapped .label,
+  .cell.birthday-cell:active .value, .cell.birthday-cell.tapped .value { color: #fff; }
+
+  /* Paragraph-style cell (About copy) */
+  .cell.prose {
+    display: block;
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #2b2b2b;
+  }
+  .cell.prose p { margin: 0 0 11px; }
+  .cell.prose p:last-child { margin-bottom: 0; }
+  .cell.prose .water { color: #2b2b2b; }
+
+  /* sub detail line under a work item */
+  .cell.stacked { flex-direction: column; align-items: flex-start; }
+  .cell.stacked .label { font-weight: 600; }
+  .cell.stacked .sub {
+    font-size: 13px; color: var(--text-detail); margin-top: 2px; padding-right: 18px;
+  }
+  a.cell.stacked:active .sub, a.cell.stacked.tapped .sub { color: rgba(255,255,255,0.85); }
+
+  /* iOS notification badge bubble (e.g. "Current"), pinned to the top corner */
+  .badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 2;
+    background: linear-gradient(to bottom, #ff7b7b 0%, #e23b3b 52%, #d12f2f 100%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 4px 9px;
+    border-radius: 11px;
+    min-width: 20px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(0,0,0,0.3);
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    white-space: nowrap;
+  }
+
+  /* Stacked work cell that also carries a corner badge */
+  .cell.stack-badge { position: relative; flex-direction: row; align-items: center; padding-top: 13px; }
+  .cell.stack-badge .cell-text { display: flex; flex-direction: column; min-width: 0; }
+  .cell.stack-badge .label { font-weight: 600; }
+  .cell.stack-badge .sub { font-size: 13px; color: var(--text-detail); margin-top: 2px; padding-right: 6px; }
+  a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255,255,255,0.85); }
+
+  /* iOS 6-era glossy app-icon tile: holds a logo image or an emoji */
+  .app-icon {
+    position: relative;
+    width: 30px; height: 30px; flex: 0 0 auto; margin-right: 11px;
+    border-radius: 6px; overflow: hidden; background: #fff;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 1px 1px rgba(0,0,0,0.14);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .app-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .app-icon::after { /* glossy top highlight */
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.04));
+    pointer-events: none;
+  }
+  .app-icon.emoji { font-size: 18px; line-height: 1; }
+  .app-icon.emoji::after { display: none; }
+
+  /* Cell with a left icon/logo + stacked text (favicon links, education) */
+  .cell.iconcell { align-items: center; }
+  .cell.iconcell .cell-text { display: flex; flex-direction: column; min-width: 0; }
+  .cell.iconcell .label { font-weight: 600; }
+  .cell.iconcell .sub { font-size: 13px; color: var(--text-detail); margin-top: 2px; }
+  a.cell.iconcell:active .sub, a.cell.iconcell.tapped .sub { color: rgba(255,255,255,0.85); }
+
+  /* ---------- Drill-down detail view (iOS push navigation) ---------- */
+  .detail-view {
+    position: absolute;
+    top: 20px; /* sit just below the status bar */
+    left: 0; right: 0; bottom: 0;
+    background-color: var(--pinstripe-base);
+    background-image: repeating-linear-gradient(90deg,
+      var(--pinstripe-base) 0, var(--pinstripe-base) 3px,
+      var(--pinstripe-line) 3px, var(--pinstripe-line) 4px);
+    transform: translateX(100%);
+    transition: transform 0.32s ease;
+    z-index: 20;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .detail-view.open { transform: translateX(0); }
+  body.modal-open { overflow: hidden; }
+
+  /* iOS 6 back button (with arrow tail) */
+  .navbar { position: relative; }
+  .back-btn {
+    position: absolute;
+    left: 9px; top: 7px;
+    height: 30px;
+    padding: 0 9px 0 14px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(to bottom, #8493ad 0%, #5e6f92 100%);
+    border: 1px solid var(--navbar-border);
+    border-radius: 5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+    cursor: pointer;
+    line-height: 28px;
+  }
+  .back-btn::before {
+    content: "";
+    position: absolute;
+    left: -8px; top: 5px;
+    width: 18px; height: 18px;
+    background: #71819f;
+    border-left: 1px solid var(--navbar-border);
+    border-bottom: 1px solid var(--navbar-border);
+    transform: rotate(45deg);
+    border-radius: 0 0 0 4px;
+  }
+  .back-btn:active { filter: brightness(0.9); }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    text-align: center;
+    margin-top: 26px;
+    padding: 0 24px;
+    font-size: 12px;
+    color: #707880;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  }
+
+  /* ---------- Toast (iOS HUD style) ---------- */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 64px;
+    transform: translateX(-50%) translateY(24px);
+    max-width: 320px;
+    width: calc(100% - 48px);
+    background: rgba(0,0,0,0.82);
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 15px;
+    line-height: 1.35;
+    text-align: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s ease, transform 0.32s cubic-bezier(0.2,0.9,0.3,1.2);
+    z-index: 50;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  #toast .cake { font-size: 22px; display: block; margin-bottom: 4px; }
+
+  /* ---------- iOS 6 alert popup ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    z-index: 60;
+    background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .alert {
+    width: 270px; max-width: calc(100% - 48px);
+    background: linear-gradient(to bottom, #fdfdfd 0%, #d4d8de 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 12px 44px rgba(0,0,0,0.55);
+    padding: 18px 16px 14px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.25s cubic-bezier(0.2,0.9,0.3,1.15);
+  }
+  .modal-backdrop.open .alert { transform: scale(1); }
+  .alert-logo {
+    width: auto; max-width: 100%; max-height: 130px; object-fit: contain;
+    display: block; margin: 2px auto 12px; border-radius: 6px;
+  }
+  .alert-title {
+    font-size: 19px; font-weight: 700; color: #1a1a1a;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .alert-msg {
+    font-size: 14px; color: #2b2b2b; line-height: 1.4;
+    margin: 6px 2px 14px; text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .alert-btn {
+    width: 100%; height: 44px;
+    font-family: inherit; font-size: 17px; font-weight: 600; color: #fff;
+    cursor: pointer;
+    border-radius: 9px; border: 1px solid #20457e;
+    background: linear-gradient(to bottom, #5b9bf0 0%, #2f6fd6 50%, #2862c8 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+  }
+  .alert-btn:active { filter: brightness(0.92); }
+
+  /* ---------- Confetti canvas ---------- */
+  #confetti {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #toast { transition: opacity 0.2s ease; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+  }
+
+  @media (min-width: 480px) {
+    /* Cydia-style: flush column on the pinstripe, no framing border/shadow,
+       same 420px content dimensions. */
+    .screen { box-shadow: none; border-radius: 0; min-height: 100vh; }
+    /* Bigger IUPUI photo on desktop */
+    .alert { width: 340px; }
+    .alert-logo { max-height: 260px; }
+  }
+</style>
+</head>
 <body>
-  <h1>Andrew Columbus</h1>
-</body>
+  <div class="screen">
 
+    <!-- Status bar -->
+    <div class="statusbar">
+      <div class="sb-left">
+        <span class="signal"><i></i><i></i><i></i><i></i><i></i></span>
+        <img class="carrier-logo" src="icons/immersivegroup.png" alt="">
+        <span>Immersive</span>
+      </div>
+      <div class="sb-time" id="sb-time">9:41 AM</div>
+      <div class="battery"><span></span></div>
+    </div>
+
+    <!-- Nav bar -->
+    <div class="navbar"><h1>Andrew Columbus</h1></div>
+
+    <div class="content">
+
+      <!-- Profile header -->
+      <div class="profile">
+        <div class="avatar">
+          <img id="headshot" alt="Andrew Columbus" style="display:none">
+          <span class="initials" id="initials">AC</span>
+        </div>
+        <p class="name">Andrew Columbus</p>
+        <p class="tagline">Founder, Immersivegroup</p>
+      </div>
+
+      <!-- About -->
+      <div class="section-header">About</div>
+      <div class="group">
+        <div class="cell prose">
+          <p>Hey, I'm Andrew. I'm the founder of Immersivegroup, where I'm
+          on a mission to make immersive experiences accessible and scalable.</p>
+          <p>Before this I was a sales executive and product manager at Luxedo,
+          a projection-mapping company. And before that, I taught English in
+          Reims, France.</p>
+          <p class="water">When I'm not working, I'm likely to be near or in a body of water. &#127754;</p>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="section-header">Details</div>
+      <div class="group">
+        <div class="cell iconcell" id="age-cell">
+          <span class="app-icon emoji">&#127874;</span>
+          <span class="label">Age</span>
+          <span class="value" id="age-value">--</span>
+        </div>
+        <div class="cell iconcell">
+          <span class="app-icon emoji">&#128205;</span>
+          <span class="label">Based</span>
+          <span class="value">Minneapolis, MN</span>
+        </div>
+      </div>
+
+      <!-- Work -->
+      <div class="section-header">Work</div>
+      <div class="group">
+        <a class="cell stack-badge disclosure" href="https://immersive-group.com" target="_blank" rel="noopener">
+          <span class="app-icon"><img class="fav" src="icons/immersivegroup.png" alt=""></span>
+          <span class="cell-text">
+            <span class="label">Immersivegroup</span>
+            <span class="sub">Founder - immersive experiences, accessible &amp; scalable</span>
+          </span>
+          <span class="badge">Current</span>
+        </a>
+        <a class="cell iconcell disclosure" id="royalston-cell" href="#" role="button" aria-label="Royalston Square - view links">
+          <span class="app-icon"><img class="fav" src="icons/anticstudios.png" alt=""></span>
+          <span class="cell-text">
+            <span class="label">Royalston Square</span>
+            <span class="sub">Led the 36-projector immersive venue - hosted Ferrari, Red Bull &amp; more</span>
+          </span>
+        </a>
+        <a class="cell iconcell disclosure" target="_blank" rel="noopener">
+          <span class="app-icon"><img class="fav" src="icons/luxedo.png" alt=""></span>
+          <span class="cell-text">
+            <span class="label">Luxedo</span>
+            <span class="sub">Sales executive &amp; product manager - projection mapping</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Education -->
+      <div class="section-header">Education</div>
+      <div class="group">
+        <a class="cell iconcell disclosure" id="iupui-cell" href="#" role="button" aria-label="IUPUI - view details">
+          <span class="app-icon"><img class="fav" src="icons/iupui.png" alt="IUPUI"></span>
+          <span class="cell-text">
+            <span class="label">IUPUI</span>
+            <span class="sub">B.A. French &middot; Class of 2023</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Contact -->
+      <div class="section-header">Contact</div>
+      <div class="group">
+        <a class="cell iconcell disclosure" href="https://www.linkedin.com/in/andrewcolumbus/" target="_blank" rel="noopener">
+          <span class="app-icon"><img class="fav" src="icons/linkedin.png" alt=""></span>
+          <span class="label">LinkedIn</span>
+          <span class="value">andrewcolumbus</span>
+        </a>
+        <a class="cell iconcell disclosure" href="https://instagram.com/drewcolumbus" target="_blank" rel="noopener">
+          <span class="app-icon"><img class="fav" src="icons/instagram.png" alt=""></span>
+          <span class="label">Instagram</span>
+          <span class="value">@drewcolumbus</span>
+        </a>
+        <a class="cell iconcell disclosure" href="https://immersive-group.com" target="_blank" rel="noopener">
+          <span class="app-icon"><img class="fav" src="icons/immersivegroup.png" alt=""></span>
+          <span class="label">Immersivegroup</span>
+          <span class="value">immersive-group.com</span>
+        </a>
+      </div>
+
+      <div class="footer">
+        <p>Made in Minneapolis, Knoxville, Reims, Laramie and Chicago.</p>
+      </div>
+
+    </div>
+
+    <!-- Royalston Square drill-down submenu (iOS push navigation) -->
+    <div class="detail-view" id="royalston-detail" aria-hidden="true">
+      <div class="navbar">
+        <button class="back-btn" id="royalston-back" type="button">Work</button>
+        <h1>Royalston Square</h1>
+      </div>
+      <div class="content">
+        <div class="section-header">Press &amp; Links</div>
+        <div class="group">
+          <a class="cell iconcell disclosure" href="https://eventsbyentourage.com/weddings/the-royalston/" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="icons/entourage.svg" alt=""></span>
+            <span class="cell-text">
+              <span class="label">Events by Entourage</span>
+              <span class="sub">The Royalston - weddings &amp; events</span>
+            </span>
+          </a>
+          <a class="cell iconcell disclosure" href="https://northloop.org/immersive-entertainment-venue-now-booking-special-events/" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="icons/northloop.png" alt=""></span>
+            <span class="cell-text">
+              <span class="label">North Loop</span>
+              <span class="sub">Immersive entertainment venue now booking</span>
+            </span>
+          </a>
+          <a class="cell iconcell disclosure" href="https://kstp.com/kstp-news/top-news/new-event-venue-brings-a-taste-of-vegas-to-minneapolis/" target="_blank" rel="noopener">
+            <span class="app-icon"><img class="fav" src="icons/kstp.png" alt=""></span>
+            <span class="cell-text">
+              <span class="label">KSTP 5 Eyewitness News</span>
+              <span class="sub">A taste of Vegas comes to Minneapolis</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IUPUI popup -->
+  <div class="modal-backdrop" id="iupui-modal" aria-hidden="true">
+    <div class="alert" role="dialog" aria-modal="true" aria-label="IUPUI">
+      <img class="alert-logo" src="IUPUI.jpeg" alt="IUPUI">
+      <div class="alert-title">IUPUI</div>
+      <div class="alert-msg">Indiana University&ndash;Purdue University Indianapolis<br>B.A. French &middot; Class of 2023</div>
+      <button class="alert-btn" id="iupui-close" type="button">OK</button>
+    </div>
+  </div>
+
+  <!-- Toast + confetti -->
+  <div id="toast" role="status" aria-live="polite"></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var BIRTHDAY = { year: 2002, month: 6, day: 8 }; // June 8, 2002
+    var reduceMotion = window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ---------- Live clock in the status bar ----------
+    function updateClock() {
+      var now = new Date();
+      var h = now.getHours();
+      var m = now.getMinutes();
+      var ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12; if (h === 0) h = 12;
+      var mm = m < 10 ? "0" + m : "" + m;
+      document.getElementById("sb-time").textContent = h + ":" + mm + " " + ampm;
+    }
+    updateClock();
+    setInterval(updateClock, 10000);
+
+    // ---------- Compute age ----------
+    function computeAge() {
+      var now = new Date();
+      var age = now.getFullYear() - BIRTHDAY.year;
+      var hadBirthday =
+        (now.getMonth() + 1 > BIRTHDAY.month) ||
+        (now.getMonth() + 1 === BIRTHDAY.month && now.getDate() >= BIRTHDAY.day);
+      if (!hadBirthday) age -= 1;
+      return age;
+    }
+    function isBirthdayToday() {
+      var now = new Date();
+      return (now.getMonth() + 1 === BIRTHDAY.month) && (now.getDate() === BIRTHDAY.day);
+    }
+    var currentAge = computeAge();
+    document.getElementById("age-value").textContent = currentAge;
+
+    // ---------- Optional headshot ----------
+    var hs = document.getElementById("headshot");
+    hs.onload = function () {
+      hs.style.display = "block";
+      document.getElementById("initials").style.display = "none";
+    };
+    hs.onerror = function () { hs.style.display = "none"; };
+    hs.src = "headshot.jpg";
+
+    // ---------- Toast ----------
+    var toastEl = document.getElementById("toast");
+    var toastTimer = null;
+    function showToast(html) {
+      toastEl.innerHTML = html;
+      toastEl.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () {
+        toastEl.classList.remove("show");
+      }, 5200);
+    }
+
+    // ---------- Confetti (vanilla canvas) ----------
+    var canvas = document.getElementById("confetti");
+    var ctx = canvas.getContext("2d");
+    var pieces = [];
+    var rafId = null;
+    var running = false;
+    var COLORS = ["#ff3b30", "#ff9500", "#ffcc00", "#34c759", "#007aff", "#5856d6", "#ff2d55"];
+
+    function sizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function spawn(count) {
+      for (var i = 0; i < count; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * canvas.height * 0.4,
+          w: 6 + Math.random() * 6,
+          h: 8 + Math.random() * 8,
+          color: COLORS[(Math.random() * COLORS.length) | 0],
+          vy: 2 + Math.random() * 3.5,
+          vx: -1.5 + Math.random() * 3,
+          rot: Math.random() * Math.PI * 2,
+          vr: -0.2 + Math.random() * 0.4,
+          sway: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = pieces.length - 1; i >= 0; i--) {
+        var p = pieces[i];
+        p.sway += 0.05;
+        p.y += p.vy;
+        p.x += p.vx + Math.sin(p.sway) * 0.8;
+        p.rot += p.vr;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+        if (p.y - p.h > canvas.height) pieces.splice(i, 1);
+      }
+      if (pieces.length > 0) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        running = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function celebrate() {
+      var msg =
+        '<span class="cake">&#127874;</span>' +
+        "It's my birthday! I'm turning " + currentAge + " today. " +
+        "Thanks for stopping by &#127881;";
+      // On the actual birthday the computed age already reflects the new age.
+      showToast(msg);
+
+      if (reduceMotion) return;
+      sizeCanvas();
+      spawn(140);
+      setTimeout(function () { spawn(80); }, 600);
+      if (!running) { running = true; rafId = requestAnimationFrame(tick); }
+    }
+
+    window.addEventListener("resize", function () {
+      if (running) sizeCanvas();
+    });
+
+    // ---------- Birthday only: make the Age cell celebratory on June 8 ----------
+    // On every other day the Age cell is a plain, non-interactive row.
+    if (isBirthdayToday()) {
+      var ageCell = document.getElementById("age-cell");
+      ageCell.classList.add("birthday-cell");
+      ageCell.setAttribute("role", "button");
+      ageCell.setAttribute("tabindex", "0");
+      ageCell.setAttribute("aria-label", "It's my birthday - tap to celebrate");
+      ageCell.addEventListener("click", function () {
+        ageCell.classList.add("tapped");
+        setTimeout(function () { ageCell.classList.remove("tapped"); }, 180);
+        celebrate();
+      });
+      ageCell.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); celebrate(); }
+      });
+      // Auto-fire once on load on the real birthday.
+      setTimeout(celebrate, 700);
+    }
+
+    // ---------- Royalston Square drill-down submenu ----------
+    var royCell = document.getElementById("royalston-cell");
+    var royDetail = document.getElementById("royalston-detail");
+    var royBack = document.getElementById("royalston-back");
+    function openDetail() {
+      window.scrollTo(0, 0);
+      royDetail.classList.add("open");
+      royDetail.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+    }
+    function closeDetail() {
+      royDetail.classList.remove("open");
+      royDetail.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+    }
+    if (royCell) {
+      royCell.addEventListener("click", function (e) { e.preventDefault(); openDetail(); });
+    }
+    if (royBack) { royBack.addEventListener("click", closeDetail); }
+
+    // ---------- IUPUI popup ----------
+    var iupuiCell = document.getElementById("iupui-cell");
+    var iupuiModal = document.getElementById("iupui-modal");
+    var iupuiClose = document.getElementById("iupui-close");
+    function openModal() {
+      iupuiModal.classList.add("open");
+      iupuiModal.setAttribute("aria-hidden", "false");
+    }
+    function closeModal() {
+      iupuiModal.classList.remove("open");
+      iupuiModal.setAttribute("aria-hidden", "true");
+    }
+    if (iupuiCell) {
+      iupuiCell.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
+    }
+    if (iupuiClose) { iupuiClose.addEventListener("click", closeModal); }
+    if (iupuiModal) {
+      iupuiModal.addEventListener("click", function (e) {
+        if (e.target === iupuiModal) closeModal();
+      });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && iupuiModal.classList.contains("open")) closeModal();
+    });
+
+    // ---------- Favicon fallback (neutral rounded square if one fails) ----------
+    var FAV_FALLBACK = "data:image/svg+xml," +
+      "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E" +
+      "%3Crect width='32' height='32' rx='6' fill='%23c2c8ce'/%3E%3C/svg%3E";
+    var favs = document.querySelectorAll("img.fav");
+    for (var f = 0; f < favs.length; f++) {
+      favs[f].addEventListener("error", function () {
+        if (this.src !== FAV_FALLBACK) { this.src = FAV_FALLBACK; }
+      });
+    }
+  })();
+  </script>
+</body>
 </html>
