@@ -1,0 +1,471 @@
+/* ============================================================
+   iOS 6 skeuomorphic personal site - Andrew Columbus
+   All texture/chrome rendered in CSS. No external assets.
+   ============================================================ */
+
+:root {
+  --pinstripe-base: #c5ccd3;
+  --pinstripe-line: #bcc3cb;
+  --cell-bg: #ffffff;
+  --cell-bg-active: #027aff;
+  --separator: #c8c7cc;
+  --text: #000000;
+  --text-detail: #8e8e93;
+  --text-blue: #007aff;
+  --section-header: #6d6d72;
+  --navbar-top: #97a6bf;
+  --navbar-bottom: #67789a;
+  --navbar-border: #2b3a52;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--text);
+  /* iOS 6 grouped table view pinstripe */
+  background-color: var(--pinstripe-base);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--pinstripe-base) 0,
+    var(--pinstripe-base) 3px,
+    var(--pinstripe-line) 3px,
+    var(--pinstripe-line) 4px
+  );
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+}
+
+/* The "device screen": centered column on desktop, full width on phones */
+.screen {
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 22px rgba(0,0,0,0.18);
+  background-color: var(--pinstripe-base);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--pinstripe-base) 0,
+    var(--pinstripe-base) 3px,
+    var(--pinstripe-line) 3px,
+    var(--pinstripe-line) 4px
+  );
+  overflow: hidden;
+}
+
+/* ---------- Status bar ---------- */
+.statusbar {
+  height: 20px;
+  background: linear-gradient(to bottom, #e9ebee 0%, #c8ccd2 100%);
+  border-bottom: 1px solid #9aa0a8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a1a;
+  position: relative;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+.statusbar .sb-left { display: flex; align-items: center; gap: 5px; }
+.statusbar .carrier-logo {
+  width: 14px; height: 14px; display: block;
+  border-radius: 3px; object-fit: contain;
+}
+.statusbar .sb-time {
+  position: absolute; left: 0; right: 0; text-align: center;
+  font-weight: 700; pointer-events: none;
+}
+.signal { display: flex; align-items: flex-end; gap: 1px; height: 10px; }
+.signal i { width: 3px; background: #1a1a1a; border-radius: 1px; display: block; }
+.signal i:nth-child(1){ height: 4px; }
+.signal i:nth-child(2){ height: 6px; }
+.signal i:nth-child(3){ height: 8px; }
+.signal i:nth-child(4){ height: 10px; }
+.signal i:nth-child(5){ height: 10px; opacity: 0.3; }
+.battery {
+  width: 24px; height: 11px; border: 1px solid #1a1a1a; border-radius: 2px;
+  position: relative; padding: 1px;
+}
+.battery::after {
+  content: ""; position: absolute; right: -3px; top: 3px;
+  width: 2px; height: 5px; background: #1a1a1a; border-radius: 0 1px 1px 0;
+}
+.battery span { display: block; height: 100%; width: 82%; background: #1a1a1a; border-radius: 1px; }
+
+/* ---------- Nav bar ---------- */
+.navbar {
+  height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 50%),
+    linear-gradient(to bottom, var(--navbar-top) 0%, var(--navbar-bottom) 100%);
+  border-bottom: 1px solid var(--navbar-border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.navbar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.45);
+  letter-spacing: -0.2px;
+}
+
+/* ---------- Scrollable content ---------- */
+.content { padding: 10px 0 28px; }
+
+/* ---------- Profile header (app-icon style photo + name) ---------- */
+.profile { text-align: center; padding: 18px 16px 6px; }
+.avatar {
+  width: 84px; height: 84px; margin: 0 auto 10px;
+  border-radius: 18px;
+  background: linear-gradient(to bottom, #8fa3c4, #566a8e);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.6),
+    0 1px 3px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar .initials {
+  font-size: 40px; font-weight: 700; color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+}
+/* iOS app-icon gloss */
+.avatar::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 48%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+  border-radius: 18px 18px 50% 50% / 18px 18px 22px 22px;
+  pointer-events: none;
+}
+.profile .name {
+  font-size: 24px; font-weight: 700; margin: 0;
+  color: #2b2b2b; text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+.profile .tagline {
+  font-size: 14px; color: #5b6470; margin: 3px 0 0;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* ---------- Grouped table view ---------- */
+.section-header {
+  margin: 24px 0 6px;
+  padding: 0 26px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--section-header);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+}
+.group {
+  margin: 0 10px;
+  background: var(--cell-bg);
+  border-radius: var(--radius);
+  border: 1px solid #a9abae;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  overflow: hidden;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 11px 14px;
+  background: var(--cell-bg);
+  position: relative;
+  text-decoration: none;
+  color: var(--text);
+}
+/* hairline separator inset from the left, iOS style */
+.cell + .cell::before {
+  content: "";
+  position: absolute; left: 14px; right: 0; top: 0;
+  height: 1px; background: var(--separator);
+}
+.cell .label { flex: 0 0 auto; font-size: 17px; }
+.cell .value {
+  margin-left: auto;
+  color: var(--text-detail);
+  font-size: 17px;
+  text-align: right;
+  padding-left: 10px;
+}
+a.cell .label { color: var(--text); }
+a.cell .value { color: var(--text-blue); }
+
+/* disclosure chevron */
+a.cell.disclosure { padding-right: 30px; }
+a.cell.disclosure::after {
+  content: "";
+  position: absolute; right: 14px; top: 50%;
+  width: 8px; height: 8px; margin-top: -5px;
+  border-right: 2px solid #c0c0c5;
+  border-top: 2px solid #c0c0c5;
+  transform: rotate(45deg);
+}
+/* active highlight (touch / hover) */
+a.cell:active, a.cell.tapped {
+  background: var(--cell-bg-active);
+}
+a.cell:active .label, a.cell.tapped .label,
+a.cell:active .value, a.cell.tapped .value { color: #fff; }
+a.cell:active::after, a.cell.tapped::after { border-color: #fff; }
+
+/* Age cell is only interactive on the actual birthday (June 8) */
+.cell.birthday-cell { cursor: pointer; }
+.cell.birthday-cell .value { color: var(--text-blue); }
+.cell.birthday-cell:active, .cell.birthday-cell.tapped { background: var(--cell-bg-active); }
+.cell.birthday-cell:active .label, .cell.birthday-cell.tapped .label,
+.cell.birthday-cell:active .value, .cell.birthday-cell.tapped .value { color: #fff; }
+
+/* Paragraph-style cell (About copy) */
+.cell.prose {
+  display: block;
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2b2b2b;
+}
+.cell.prose p { margin: 0 0 11px; }
+.cell.prose p:last-child { margin-bottom: 0; }
+.cell.prose .water { color: #2b2b2b; }
+
+/* sub detail line under a work item */
+.cell.stacked { flex-direction: column; align-items: flex-start; }
+.cell.stacked .label { font-weight: 600; }
+.cell.stacked .sub {
+  font-size: 13px; color: var(--text-detail); margin-top: 2px; padding-right: 18px;
+}
+a.cell.stacked:active .sub, a.cell.stacked.tapped .sub { color: rgba(255,255,255,0.85); }
+
+/* iOS notification badge bubble (e.g. "Current"), pinned to the top corner */
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+  background: linear-gradient(to bottom, #ff7b7b 0%, #e23b3b 52%, #d12f2f 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 9px;
+  border-radius: 11px;
+  min-width: 20px;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.28);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(0,0,0,0.3);
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+  white-space: nowrap;
+}
+
+/* Stacked work cell that also carries a corner badge */
+.cell.stack-badge { position: relative; flex-direction: row; align-items: center; padding-top: 13px; }
+.cell.stack-badge .cell-text { display: flex; flex-direction: column; min-width: 0; }
+.cell.stack-badge .label { font-weight: 600; }
+.cell.stack-badge .sub { font-size: 13px; color: var(--text-detail); margin-top: 2px; padding-right: 6px; }
+a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255,255,255,0.85); }
+
+/* iOS 6-era glossy app-icon tile: holds a logo image or an emoji */
+.app-icon {
+  position: relative;
+  width: 30px; height: 30px; flex: 0 0 auto; margin-right: 11px;
+  border-radius: 6px; overflow: hidden; background: #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 1px 1px rgba(0,0,0,0.14);
+  display: flex; align-items: center; justify-content: center;
+}
+.app-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.app-icon::after { /* glossy top highlight */
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.04));
+  pointer-events: none;
+}
+.app-icon.emoji { font-size: 18px; line-height: 1; }
+.app-icon.emoji::after { display: none; }
+
+/* Cell with a left icon/logo + stacked text (favicon links, education) */
+.cell.iconcell { align-items: center; }
+.cell.iconcell .cell-text { display: flex; flex-direction: column; min-width: 0; }
+.cell.iconcell .label { font-weight: 600; }
+.cell.iconcell .sub { font-size: 13px; color: var(--text-detail); margin-top: 2px; }
+a.cell.iconcell:active .sub, a.cell.iconcell.tapped .sub { color: rgba(255,255,255,0.85); }
+
+/* ---------- Drill-down detail view (iOS push navigation) ---------- */
+.detail-view {
+  position: absolute;
+  top: 20px; /* sit just below the status bar */
+  left: 0; right: 0; bottom: 0;
+  background-color: var(--pinstripe-base);
+  background-image: repeating-linear-gradient(90deg,
+    var(--pinstripe-base) 0, var(--pinstripe-base) 3px,
+    var(--pinstripe-line) 3px, var(--pinstripe-line) 4px);
+  transform: translateX(100%);
+  transition: transform 0.32s ease;
+  z-index: 20;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.detail-view.open { transform: translateX(0); }
+body.modal-open { overflow: hidden; }
+
+/* iOS 6 back button: one cohesive glossy pentagon (reusable standard).
+   The element itself is the dark 1px border; the ::before is the glossy
+   gradient inset 1px inside the same clipped shape, so the arrow point and
+   the body share a single continuous gloss with no seam. */
+.navbar { position: relative; }
+.back-btn {
+  --back-arrow: 11px;            /* how far the point juts left of the body */
+  position: absolute;
+  left: 9px; top: 7px;
+  height: 30px;
+  padding: 0 11px 0 19px;        /* extra left padding clears the arrow point */
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.45);
+  cursor: pointer;
+  border: 0;
+  background: var(--navbar-border);
+  -webkit-clip-path: polygon(var(--back-arrow) 0, 100% 0, 100% 100%, var(--back-arrow) 100%, 0 50%);
+          clip-path: polygon(var(--back-arrow) 0, 100% 0, 100% 100%, var(--back-arrow) 100%, 0 50%);
+}
+.back-btn::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: linear-gradient(to bottom, #8b9ab3 0%, #6c7d9e 50%, #5e6f92 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+  -webkit-clip-path: polygon(var(--back-arrow) 0, 100% 0, 100% 100%, var(--back-arrow) 100%, 0 50%);
+          clip-path: polygon(var(--back-arrow) 0, 100% 0, 100% 100%, var(--back-arrow) 100%, 0 50%);
+}
+.back-btn:active::before { filter: brightness(0.9); }
+
+/* ---------- Footer ---------- */
+.footer {
+  text-align: center;
+  margin-top: 26px;
+  padding: 0 24px;
+  font-size: 12px;
+  color: #707880;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* ---------- Toast (iOS HUD style) ---------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 64px;
+  transform: translateX(-50%) translateY(24px);
+  max-width: 320px;
+  width: calc(100% - 48px);
+  background: rgba(0,0,0,0.82);
+  color: #fff;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 15px;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s cubic-bezier(0.2,0.9,0.3,1.2);
+  z-index: 50;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#toast .cake { font-size: 22px; display: block; margin-bottom: 4px; }
+
+/* ---------- iOS 6 alert popup ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  z-index: 60;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.alert {
+  width: 270px; max-width: calc(100% - 48px);
+  background: linear-gradient(to bottom, #fdfdfd 0%, #d4d8de 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 12px 44px rgba(0,0,0,0.55);
+  padding: 18px 16px 14px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.25s cubic-bezier(0.2,0.9,0.3,1.15);
+}
+.modal-backdrop.open .alert { transform: scale(1); }
+.alert-logo {
+  width: auto; max-width: 100%; max-height: 130px; object-fit: contain;
+  display: block; margin: 2px auto 12px; border-radius: 6px;
+}
+.alert-title {
+  font-size: 19px; font-weight: 700; color: #1a1a1a;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+}
+.alert-msg {
+  font-size: 14px; color: #2b2b2b; line-height: 1.4;
+  margin: 6px 2px 14px; text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+.alert-btn {
+  width: 100%; height: 44px;
+  font-family: inherit; font-size: 17px; font-weight: 600; color: #fff;
+  cursor: pointer;
+  border-radius: 9px; border: 1px solid #20457e;
+  background: linear-gradient(to bottom, #5b9bf0 0%, #2f6fd6 50%, #2862c8 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+}
+.alert-btn:active { filter: brightness(0.92); }
+
+/* ---------- Confetti canvas ---------- */
+#confetti {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #toast { transition: opacity 0.2s ease; }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+}
+
+/* ---------- Touch (mobile) devices: hide the faux iOS status bar ---------- */
+/* (hover: none) + (pointer: coarse) targets phones/tablets in any orientation,
+   not just narrow widths - so it also applies to landscape phones. */
+@media (hover: none) and (pointer: coarse) {
+  .statusbar { display: none; }
+  /* With the status bar gone, the drill-down view starts at the very top. */
+  .detail-view { top: 0; }
+}
+
+@media (min-width: 480px) {
+  /* Cydia-style: flush column on the pinstripe, no framing border/shadow,
+     same 420px content dimensions. */
+  .screen { box-shadow: none; border-radius: 0; min-height: 100vh; }
+  /* Bigger IUPUI photo on desktop */
+  .alert { width: 340px; }
+  .alert-logo { max-height: 260px; }
+}
