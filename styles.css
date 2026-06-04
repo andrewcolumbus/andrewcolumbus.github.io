@@ -100,6 +100,9 @@ body {
   width: 2px; height: 5px; background: #1a1a1a; border-radius: 0 1px 1px 0;
 }
 .battery span { display: block; height: 100%; width: 82%; background: #1a1a1a; border-radius: 1px; }
+/* Modern status-bar parts (Wi-Fi glyph + Dynamic Island) used only by the
+   Liquid Glass / iOS 26 theme; the iOS 6 status bar never shows them. */
+.wifi, .dynamic-island { display: none; }
 
 /* ---------- Nav bar ---------- */
 .navbar {
@@ -118,6 +121,57 @@ body {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0,0,0,0.45);
   letter-spacing: -0.2px;
+}
+
+/* ---------- Theme switch — iOS 6 segmented control (nav bar right slot) ----------
+   Lives only in the page header (header.navbar, which is position:relative). The
+   drill-down navbars are div.navbar and never receive this control. glass/glass.js
+   wires it and keeps aria-checked/tabindex in sync with the active theme. */
+.theme-toggle {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  height: 30px;
+  display: inline-flex;
+  border: 1px solid var(--navbar-border);
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.theme-toggle .seg {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  border: 0;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 28px;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.45);
+  white-space: nowrap;
+  cursor: pointer;
+  /* unselected segment: the same two-tone gloss as the iOS 6 back button */
+  background: linear-gradient(to bottom,
+    #9aa9c2 0%, #8395b2 49%, #6a7c9e 51%, #5d6e91 100%);
+}
+.theme-toggle .seg + .seg {
+  border-left: 1px solid var(--navbar-border);
+}
+/* selected segment reads "pressed in" — darker + inset, classic iOS 6 segmented control */
+.theme-toggle .seg[aria-checked="true"] {
+  background: linear-gradient(to bottom, #41506e 0%, #54648a 100%);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+.theme-toggle .seg:focus-visible {
+  outline: 2px solid #0a60ff;
+  outline-offset: -2px;
+}
+/* Keep the centered title clear of the toggle on narrow phones. */
+@media (max-width: 380px) {
+  .navbar h1 { font-size: 17px; }
+  .theme-toggle .seg { font-size: 10px; padding: 0 6px; }
 }
 
 /* ---------- Scrollable content ---------- */

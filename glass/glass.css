@@ -1,0 +1,615 @@
+/* ============================================================================
+   Liquid Glass 2026 — alternate theme for andrewcolumbus.me
+
+   Layers a modern "Liquid Glass" look (Apple iOS 26 design language: translucent
+   frosted panels, specular edge highlights, depth, a vivid backdrop showing
+   through) on top of the existing iOS 6 site. The DOM is shared; this stylesheet
+   only restyles it.
+
+   How it stays contained / wins the cascade:
+     • Every rule is scoped under `html.theme-glass …`, so it applies ONLY in
+       Glass mode and outranks the single-class iOS 6 rules in styles.css.
+     • Loaded AFTER styles.css. No !important.
+
+   Interface with glass/glass.js (the only coupling between CSS and JS):
+     • html.theme-glass / html.theme-ios  — the active theme (class on <html>)
+     • --px / --py   percentages, set by JS on the `.group` under the pointer,
+                     consumed by `.group::before` (the tracking specular highlight)
+     • --scrolly     px, set by JS on <html>, consumed by the mesh for parallax
+
+   Light + dark are automatic via prefers-color-scheme. All motion is disabled
+   under prefers-reduced-motion (here AND in glass.js).
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   Tokens — dark is the default Glass palette; light overrides further down.
+   --------------------------------------------------------------------------- */
+html.theme-glass {
+  color-scheme: dark;
+
+  /* Redefine the iOS vars that resting rules already consume, so .group/.cell/
+     .value/.sub/separators/back-button adopt Glass automatically. */
+  --text: rgba(255, 255, 255, 0.96);
+  --text-detail: rgba(232, 238, 255, 0.74);
+  --text-blue: #8cc2ff;                   /* bright sky-azure link color (clears AA over the navy panel + brightest blue blob) */
+  --section-header: rgba(232, 238, 255, 0.82);
+  --separator: rgba(255, 255, 255, 0.14);
+  --cell-bg: transparent;                 /* the .group panel is the frosted surface */
+  --cell-bg-active: rgba(46, 139, 255, 0.30);   /* electric-azure active row */
+  --radius: 16px;                         /* softer, more concentric corners */
+  --back-gloss-top: rgba(255, 255, 255, 0.22);
+  --back-gloss-hi:  rgba(255, 255, 255, 0.15);
+  --back-gloss-lo:  rgba(255, 255, 255, 0.10);
+  --back-gloss-bot: rgba(255, 255, 255, 0.06);
+
+  /* Glass-only tokens */
+  --g-blur: 22px;
+  --g-sat: 165%;
+  --g-panel-fill: rgba(255, 255, 255, 0.10);
+  --g-panel-fill-strong: rgba(22, 28, 52, 0.74);   /* behind text — opaque enough to clear AA over the brightest mesh blob */
+  --g-chip: rgba(16, 20, 38, 0.74);                /* substrate for on-mesh labels (section headers, footer) */
+  --g-edge: rgba(255, 255, 255, 0.55);             /* top specular edge highlight */
+  --g-edge-soft: rgba(255, 255, 255, 0.16);
+  --g-depth: 0 10px 30px rgba(6, 9, 20, 0.5);
+  --g-spec: rgba(255, 255, 255, 0.85);             /* pointer-tracked highlight core */
+  --g-text-scrim: 0 1px 6px rgba(0, 0, 0, 0.45);   /* keeps text on the bare mesh legible */
+  --g-accent-fill: rgba(46, 139, 255, 0.34);
+  --g-accent-fill-strong: rgba(46, 139, 255, 0.50);
+  --g-alert-fill: rgba(20, 26, 48, 0.74);
+  --g-screen-fill: rgba(12, 16, 30, 0.84);         /* drill-down covers the main screen */
+  --g-solid-fallback: rgba(20, 26, 48, 0.94);      /* @supports no-backdrop-filter */
+
+  /* Mesh palette (dark): dark-navy base, blue-only glow (electric azure → royal → sky) */
+  --mesh-base: #070b18;
+  --mesh-1: #2e8bff;   /* electric azure — primary glow */
+  --mesh-2: #1e6bff;   /* royal blue — depth variety */
+  --mesh-3: #4f9dff;   /* lighter sky-azure */
+  --mesh-4: #1aa6ff;   /* azure-cyan — still reads blue, keeps the mesh lively */
+
+  /* Pointer position defaults (glass.js overrides on the hovered .group) */
+  --px: 50%;
+  --py: 0%;
+
+  background: var(--mesh-base);            /* ultimate backstop behind the mesh */
+}
+
+@media (prefers-color-scheme: light) {
+  html.theme-glass {
+    color-scheme: light;
+
+    --text: rgba(17, 22, 40, 0.96);
+    --text-detail: rgba(40, 48, 70, 0.72);
+    --text-blue: #0060d0;                /* darker than system blue so 17px link values clear AA on the light panel */
+    --section-header: rgba(40, 48, 70, 0.74);
+    --separator: rgba(20, 24, 40, 0.12);
+    --cell-bg-active: rgba(10, 132, 255, 0.16);
+
+    --g-panel-fill: rgba(255, 255, 255, 0.45);
+    --g-panel-fill-strong: rgba(255, 255, 255, 0.74);
+    --g-chip: rgba(255, 255, 255, 0.78);
+    --g-edge: rgba(255, 255, 255, 0.9);
+    --g-edge-soft: rgba(255, 255, 255, 0.6);
+    --g-depth: 0 10px 30px rgba(40, 50, 90, 0.18);
+    --g-spec: rgba(255, 255, 255, 0.95);
+    --g-text-scrim: 0 1px 6px rgba(255, 255, 255, 0.7);
+    --g-accent-fill: rgba(10, 132, 255, 0.20);
+    --g-accent-fill-strong: rgba(10, 132, 255, 0.34);
+    --g-alert-fill: rgba(255, 255, 255, 0.84);
+    --g-screen-fill: rgba(244, 247, 255, 0.92);
+    --g-solid-fallback: rgba(248, 250, 255, 0.96);
+
+    --mesh-base: #eef2ff;
+    --mesh-1: #ffb3d1;
+    --mesh-2: #b7c8ff;
+    --mesh-3: #d8baff;
+    --mesh-4: #aef0f2;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Strip the iOS 6 chrome so the mesh shows through the glass column.
+   --------------------------------------------------------------------------- */
+html.theme-glass body {
+  background: transparent;             /* let the fixed mesh (below) show through */
+  background-image: none;
+}
+html.theme-glass .screen {
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Animated gradient mesh — two fixed, overscanned, blurred layers behind
+   everything. Drift is animated on `transform`; scroll parallax rides on
+   `background-position` so the two never fight over the same property.
+   --------------------------------------------------------------------------- */
+html.theme-glass::before,
+html.theme-glass::after {
+  content: "";
+  position: fixed;
+  inset: -20vmax;                      /* overscan so blurred edges never show */
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
+}
+html.theme-glass::before {
+  background-color: var(--mesh-base);
+  background-image:
+    radial-gradient(38vmax 38vmax at 18% 22%, var(--mesh-1), transparent 60%),
+    radial-gradient(36vmax 36vmax at 82% 28%, var(--mesh-2), transparent 60%),
+    radial-gradient(44vmax 44vmax at 28% 82%, var(--mesh-3), transparent 62%),
+    radial-gradient(40vmax 40vmax at 80% 78%, var(--mesh-4), transparent 60%);
+  background-position: 50% calc(50% + var(--scrolly, 0px));
+  filter: blur(42px) saturate(140%);
+  animation: glassMeshDrift 30s ease-in-out infinite alternate;
+}
+html.theme-glass::after {
+  background-image:
+    radial-gradient(30vmax 30vmax at 65% 15%, var(--mesh-3), transparent 60%),
+    radial-gradient(34vmax 34vmax at 15% 60%, var(--mesh-4), transparent 62%);
+  opacity: 0.6;
+  mix-blend-mode: screen;
+  filter: blur(52px) saturate(135%);
+  animation: glassMeshDrift2 46s ease-in-out infinite alternate;
+}
+@keyframes glassMeshDrift {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1.06) rotate(0deg); }
+  50%  { transform: translate3d( 2%,  3%, 0) scale(1.12) rotate(4deg); }
+  100% { transform: translate3d( 3%, -1%, 0) scale(1.07) rotate(-3deg); }
+}
+@keyframes glassMeshDrift2 {
+  0%   { transform: translate3d( 2%,  1%, 0) scale(1.10) rotate(0deg); }
+  100% { transform: translate3d(-2%, -2%, 0) scale(1.16) rotate(-6deg); }
+}
+/* In light mode the blobs sit on a light base, so soften the blend. */
+@media (prefers-color-scheme: light) {
+  html.theme-glass::after { mix-blend-mode: normal; opacity: 0.5; }
+}
+
+/* ---------------------------------------------------------------------------
+   Nav bar (page header + drill-down headers) + the Glass toggle skin.
+   --------------------------------------------------------------------------- */
+html.theme-glass .navbar {
+  background: var(--g-panel-fill-strong);
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat));
+          backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat));
+  border-bottom: 1px solid var(--g-edge-soft);
+  box-shadow: inset 0 1px 0 var(--g-edge), 0 1px 14px rgba(6, 9, 20, 0.22);
+}
+html.theme-glass .navbar h1 {
+  color: var(--text);
+  text-shadow: none;
+}
+
+/* Toggle: frosted pill, with the selected segment as a frosted capsule. */
+html.theme-glass .theme-toggle {
+  border: 1px solid var(--g-edge-soft);
+  border-radius: 999px;
+  background: var(--g-panel-fill);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+          backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 1px 0 var(--g-edge), var(--g-depth);
+}
+html.theme-glass .theme-toggle .seg {
+  background: transparent;
+  color: var(--text-detail);
+  text-shadow: none;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+html.theme-glass .theme-toggle .seg + .seg { border-left: 0; }
+html.theme-glass .theme-toggle .seg[aria-checked="true"] {
+  background: var(--cell-bg-active);
+  color: var(--text);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 var(--g-edge);
+}
+html.theme-glass .theme-toggle .seg:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Status bar (decorative; hidden on touch). Recolor the hard-coded glyphs.
+   --------------------------------------------------------------------------- */
+/* iOS 26-style status bar: time on the left, a signal / Wi-Fi / battery cluster
+   on the right, and a Dynamic Island pill in the center. Decorative; hidden on
+   touch devices like the iOS 6 bar. Re-uses the shared .statusbar markup and
+   just rearranges + reskins it under html.theme-glass. */
+html.theme-glass .statusbar {
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+          backdrop-filter: blur(16px) saturate(150%);
+  border-bottom: 1px solid var(--g-edge-soft);
+  color: var(--text);
+  text-shadow: none;
+  justify-content: flex-start;
+  padding: 0 14px;
+}
+/* time → left, modern SF-style weight */
+html.theme-glass .sb-time {
+  position: static;
+  order: 0;
+  margin-right: auto;            /* pushes the right-side cluster to the edge */
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+/* drop the iOS 6 carrier name + logo */
+html.theme-glass .statusbar .carrier-logo,
+html.theme-glass .statusbar .carrier-name { display: none; }
+/* signal + Wi-Fi cluster sits at the right, just before the battery */
+html.theme-glass .sb-left { order: 2; gap: 6px; }
+html.theme-glass .battery {
+  order: 3;
+  margin-left: 8px;
+  border-color: var(--text);
+}
+html.theme-glass .battery::after { background: var(--text); }
+html.theme-glass .battery span { background: var(--text); }
+/* iOS 26 cellular: four solid bars (drop the iOS 6 faded fifth) */
+html.theme-glass .statusbar .signal i { background: var(--text); opacity: 1; }
+html.theme-glass .statusbar .signal i:nth-child(5) { display: none; }
+/* Wi-Fi glyph — a masked SVG tinted with the status-bar text color */
+html.theme-glass .wifi {
+  display: inline-block;
+  width: 16px;
+  height: 13px;
+  background-color: var(--text);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M15.384 6.115a.485.485 0 0 0-.047-.736A12.444 12.444 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049z'/%3E%3Cpath d='M13.229 8.271a.482.482 0 0 0-.063-.745A9.455 9.455 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7a8.46 8.46 0 0 1 4.576 1.336c.206.132.48.108.653-.065z'/%3E%3Cpath d='M11.046 10.454c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.06 0-2.062.254-2.946.704-.285.145-.326.524-.1.75l.015.015c.16.16.408.19.611.09A5.478 5.478 0 0 1 8 10c.764 0 1.49.156 2.15.435.203.1.45.07.611-.09l.015-.015z'/%3E%3Cpath d='M9.06 12.44c.196-.196.198-.52-.04-.66A1.99 1.99 0 0 0 8 11.5a1.99 1.99 0 0 0-1.02.28c-.238.14-.236.464-.04.66l.706.706a.5.5 0 0 0 .707 0l.707-.706z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M15.384 6.115a.485.485 0 0 0-.047-.736A12.444 12.444 0 0 0 8 3C5.259 3 2.723 3.882.663 5.379a.485.485 0 0 0-.048.736.518.518 0 0 0 .668.05A11.448 11.448 0 0 1 8 4c2.507 0 4.827.802 6.716 2.164.205.148.49.13.668-.049z'/%3E%3Cpath d='M13.229 8.271a.482.482 0 0 0-.063-.745A9.455 9.455 0 0 0 8 6c-1.905 0-3.68.56-5.166 1.526a.48.48 0 0 0-.063.745.525.525 0 0 0 .652.065A8.46 8.46 0 0 1 8 7a8.46 8.46 0 0 1 4.576 1.336c.206.132.48.108.653-.065z'/%3E%3Cpath d='M11.046 10.454c.226-.226.185-.605-.1-.75A6.473 6.473 0 0 0 8 9c-1.06 0-2.062.254-2.946.704-.285.145-.326.524-.1.75l.015.015c.16.16.408.19.611.09A5.478 5.478 0 0 1 8 10c.764 0 1.49.156 2.15.435.203.1.45.07.611-.09l.015-.015z'/%3E%3Cpath d='M9.06 12.44c.196-.196.198-.52-.04-.66A1.99 1.99 0 0 0 8 11.5a1.99 1.99 0 0 0-1.02.28c-.238.14-.236.464-.04.66l.706.706a.5.5 0 0 0 .707 0l.707-.706z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* Dynamic Island — the black sensor pill, centered */
+html.theme-glass .dynamic-island {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  height: 14px;
+  border-radius: 999px;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* ---------------------------------------------------------------------------
+   Profile (avatar + name + tagline).
+   --------------------------------------------------------------------------- */
+html.theme-glass .avatar {
+  background: var(--g-panel-fill);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+          backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--g-edge-soft);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);   /* deeper lift, matching the icon tiles */
+  border-radius: 22px;
+}
+html.theme-glass .avatar .initials { color: var(--text); text-shadow: none; }
+/* domed reflection over the photo */
+html.theme-glass .avatar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(120% 95% at 28% 10%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.06) 40%, transparent 64%);
+}
+/* bright top rim + soft bottom shade + edge ring */
+html.theme-glass .avatar::after {
+  inset: 0;
+  height: auto;
+  z-index: 3;
+  border-radius: inherit;
+  background: none;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.7),
+    inset 0 -4px 7px -4px rgba(0, 0, 0, 0.30),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+html.theme-glass .profile .name { color: var(--text); text-shadow: none; }
+html.theme-glass .profile .tagline { color: var(--text-detail); text-shadow: none; }
+
+/* ---------------------------------------------------------------------------
+   Section headers + footer sit directly on the mesh — add a text scrim.
+   --------------------------------------------------------------------------- */
+/* These labels float on the bare mesh (no panel behind them). A blurred
+   text-shadow can't guarantee WCAG contrast over a vivid blob, so give each a
+   real frosted chip substrate — shrink-wrapped to the text, left-aligned to the
+   panels (header) / centered (footer). */
+html.theme-glass .section-header {
+  color: var(--section-header);
+  display: inline-block;
+  margin: 24px 0 6px 16px;
+  padding: 3px 11px;
+  border-radius: 9px;
+  background: var(--g-chip);
+  border: 1px solid var(--g-edge-soft);
+  box-shadow: inset 0 1px 0 var(--g-edge);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+          backdrop-filter: blur(10px) saturate(150%);
+  text-shadow: none;
+}
+html.theme-glass .footer { color: var(--text-detail); }
+html.theme-glass .footer p {
+  display: inline-block;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 9px;
+  background: var(--g-chip);
+  border: 1px solid var(--g-edge-soft);
+  box-shadow: inset 0 1px 0 var(--g-edge);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+          backdrop-filter: blur(10px) saturate(150%);
+  text-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Grouped table view — the primary frosted panel. Blur lives HERE (one pass
+   per group), not on each cell. A pointer-tracked specular rides on ::before,
+   painted beneath the row content (rows are lifted with z-index:1).
+   --------------------------------------------------------------------------- */
+html.theme-glass .group {
+  background: var(--g-panel-fill-strong);
+  border: 1px solid var(--g-edge-soft);
+  box-shadow: inset 0 1px 0 var(--g-edge), var(--g-depth);
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat));
+          backdrop-filter: blur(var(--g-blur)) saturate(var(--g-sat));
+  position: relative;
+  isolation: isolate;                      /* contains the screen-blend specular */
+}
+html.theme-glass .group > li { position: relative; z-index: 1; }
+html.theme-glass .group::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(240px 240px at var(--px, 50%) var(--py, 50%),
+              var(--g-spec), transparent 62%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: screen;
+}
+html.theme-glass .group:hover::before { opacity: 0.25; }
+
+/* Cells: transparent over the panel; gentle hover lift + spring press. */
+html.theme-glass .cell {
+  color: var(--text);
+  transition: background 0.18s ease, transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+html.theme-glass a.cell:hover,
+html.theme-glass button.cell:hover { background: rgba(255, 255, 255, 0.06); }
+
+html.theme-glass a.cell:active, html.theme-glass a.cell.tapped,
+html.theme-glass button.cell:active, html.theme-glass button.cell.tapped,
+html.theme-glass .cell.birthday-cell:active, html.theme-glass .cell.birthday-cell.tapped {
+  background: var(--cell-bg-active);
+  transform: scale(0.985);
+}
+/* The active fill is light/translucent here, so keep readable text + chevron
+   instead of the iOS white-on-blue. */
+html.theme-glass a.cell:active .label, html.theme-glass a.cell.tapped .label,
+html.theme-glass a.cell:active .value, html.theme-glass a.cell.tapped .value,
+html.theme-glass button.cell:active .label, html.theme-glass button.cell.tapped .label,
+html.theme-glass button.cell:active .value, html.theme-glass button.cell.tapped .value,
+html.theme-glass .cell.birthday-cell:active .label, html.theme-glass .cell.birthday-cell.tapped .label,
+html.theme-glass .cell.birthday-cell:active .value, html.theme-glass .cell.birthday-cell.tapped .value {
+  color: var(--text);
+}
+html.theme-glass a.cell:active::after, html.theme-glass a.cell.tapped::after,
+html.theme-glass button.cell:active::after, html.theme-glass button.cell.tapped::after {
+  border-color: var(--text);
+}
+html.theme-glass a.cell.stack-badge:active .sub, html.theme-glass a.cell.stack-badge.tapped .sub,
+html.theme-glass a.cell.iconcell:active .sub, html.theme-glass a.cell.iconcell.tapped .sub,
+html.theme-glass button.cell.iconcell:active .sub, html.theme-glass button.cell.iconcell.tapped .sub {
+  color: var(--text-detail);
+}
+
+/* Prose ("About") + disclosure chevron recolor (iOS hard-codes these). */
+html.theme-glass .cell.prose { color: var(--text); }
+html.theme-glass .cell.prose .water { color: var(--text); }
+html.theme-glass a.cell.disclosure::after,
+html.theme-glass button.cell.disclosure::after { border-color: var(--text-detail); }
+
+/* ---------------------------------------------------------------------------
+   App-icon tiles — frosted holder for the same logo images / emoji.
+   --------------------------------------------------------------------------- */
+html.theme-glass .app-icon {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.06) 55%, rgba(255, 255, 255, 0.13));
+  border: 1px solid var(--g-edge-soft);
+  border-radius: 9px;                 /* squircle-ish */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30);   /* outer depth — lifts the icon */
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+          backdrop-filter: blur(10px) saturate(180%);
+  transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.1), box-shadow 0.18s ease;
+}
+/* domed reflection — the glass highlight, painted over the artwork */
+html.theme-glass .app-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(120% 95% at 26% 12%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08) 38%, transparent 62%);
+}
+/* bright top rim + soft bottom shade + edge ring (overlay, so it shows even over
+   a full-bleed opaque logo) */
+html.theme-glass .app-icon::after {
+  inset: 0;
+  height: auto;
+  z-index: 3;
+  border-radius: inherit;
+  background: none;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.7),
+    inset 0 -3px 5px -3px rgba(0, 0, 0, 0.30),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+/* emoji tiles: re-enable the overlay (the iOS 6 rule hides .app-icon.emoji::after) */
+html.theme-glass .app-icon.emoji::after { display: block; }
+/* subtle "alive" lift on row hover */
+html.theme-glass .cell:hover .app-icon {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------------------------------------------------------------------------
+   Badge ("Current") — frosted accent pill.
+   --------------------------------------------------------------------------- */
+html.theme-glass .badge {
+  background: var(--g-accent-fill);
+  border: 1px solid var(--g-edge-soft);
+  color: var(--text);
+  text-shadow: none;
+  box-shadow: inset 0 1px 0 var(--g-edge), 0 1px 2px rgba(0, 0, 0, 0.25);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+          backdrop-filter: blur(8px) saturate(160%);
+}
+
+/* ---------------------------------------------------------------------------
+   Back button — iOS 26 Liquid Glass: a circular frosted "lens" holding only a
+   chevron. The "Work"/"Back" text is hidden (kept as the accessible name) and
+   the iOS 6 arrow ::before is repurposed into a centered left-chevron. Dome /
+   edge-ring / blur values mirror .app-icon for visual parity.
+   --------------------------------------------------------------------------- */
+html.theme-glass .back-btn {
+  left: 12px;
+  top: 6px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0;                                   /* hide label; keeps a11y name */
+  border: 1px solid var(--g-edge-soft);
+  color: var(--text);
+  text-shadow: none;
+  background:
+    radial-gradient(120% 95% at 26% 12%, rgba(255,255,255,0.55), rgba(255,255,255,0.08) 38%, transparent 62%),
+    linear-gradient(150deg, rgba(255,255,255,0.30), rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.13));
+  box-shadow: 0 2px 6px rgba(0,0,0,0.30), inset 0 1px 0 var(--g-edge);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+          backdrop-filter: blur(10px) saturate(180%);
+}
+/* centered left chevron — replaces the iOS 6 rotated-diamond tail */
+html.theme-glass .back-btn::before {
+  left: 50%; top: 50%;
+  width: 9px; height: 9px;
+  margin: 0;
+  border: solid var(--text);
+  border-width: 0 0 2px 2px;       /* bottom + left borders, rotated => "‹" */
+  border-radius: 0 0 0 2px;
+  background: none;                 /* drop the iOS 6 gloss fill */
+  transform: translate(-30%, -50%) rotate(45deg);
+}
+/* specular edge ring + inner shading (mirrors .app-icon::after) */
+html.theme-glass .back-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255,255,255,0.7),
+    inset 0 -3px 5px -3px rgba(0,0,0,0.30),
+    inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+html.theme-glass .back-btn:active { filter: none; transform: scale(0.94); }
+
+/* ---------------------------------------------------------------------------
+   Drill-down detail view — a frosted screen that covers the main content
+   (kept opaque enough to hide it; the mesh stays behind the whole column).
+   --------------------------------------------------------------------------- */
+html.theme-glass .detail-view {
+  background: var(--g-screen-fill);
+  background-image: none;
+  -webkit-backdrop-filter: blur(26px) saturate(160%);
+          backdrop-filter: blur(26px) saturate(160%);
+}
+
+/* ---------------------------------------------------------------------------
+   Alert popup + dim backdrop + toast.
+   --------------------------------------------------------------------------- */
+html.theme-glass .modal-backdrop {
+  background: rgba(6, 9, 20, 0.42);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+}
+html.theme-glass .alert {
+  background: var(--g-alert-fill);
+  border: 1px solid var(--g-edge-soft);
+  box-shadow: inset 0 1px 0 var(--g-edge), 0 24px 60px rgba(0, 0, 0, 0.55);
+  border-radius: 22px;
+  -webkit-backdrop-filter: blur(30px) saturate(170%);
+          backdrop-filter: blur(30px) saturate(170%);
+}
+html.theme-glass .alert-title { color: var(--text); text-shadow: none; }
+html.theme-glass .alert-msg { color: var(--text-detail); text-shadow: none; }
+html.theme-glass .alert-btn {
+  background: var(--g-accent-fill);
+  border: 1px solid var(--g-edge-soft);
+  color: var(--text);
+  text-shadow: none;
+  box-shadow: inset 0 1px 0 var(--g-edge);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+          backdrop-filter: blur(10px) saturate(160%);
+}
+html.theme-glass .alert-btn:active {
+  filter: none;
+  transform: scale(0.98);
+  background: var(--g-accent-fill-strong);
+}
+html.theme-glass #toast {
+  background: rgba(12, 16, 30, 0.62);
+  border: 1px solid var(--g-edge-soft);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+          backdrop-filter: blur(18px) saturate(160%);
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — freeze the mesh, drop the specular + lift/spring. (glass.js
+   independently skips pointer tracking + parallax.)
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html.theme-glass::before,
+  html.theme-glass::after {
+    animation: none;
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+  html.theme-glass .group::before { display: none; }
+  html.theme-glass .cell { transition: background 0.12s ease; transform: none; }
+  html.theme-glass a.cell:active, html.theme-glass button.cell:active,
+  html.theme-glass a.cell.tapped, html.theme-glass button.cell.tapped,
+  html.theme-glass .cell.birthday-cell:active, html.theme-glass .cell.birthday-cell.tapped { transform: none; }
+  html.theme-glass .back-btn:active,
+  html.theme-glass .alert-btn:active { transform: none; }
+  html.theme-glass .app-icon { transition: none; }
+  html.theme-glass .cell:hover .app-icon { transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Fallback for engines without backdrop-filter — use near-opaque fills so the
+   panels still read as solid surfaces rather than washing out.
+   --------------------------------------------------------------------------- */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  html.theme-glass .navbar,
+  html.theme-glass .statusbar,
+  html.theme-glass .group,
+  html.theme-glass .avatar,
+  html.theme-glass .alert,
+  html.theme-glass .detail-view,
+  html.theme-glass #toast,
+  html.theme-glass .theme-toggle,
+  html.theme-glass .back-btn,
+  html.theme-glass .app-icon,
+  html.theme-glass .section-header,
+  html.theme-glass .footer p {
+    background-color: var(--g-solid-fallback);
+  }
+}
