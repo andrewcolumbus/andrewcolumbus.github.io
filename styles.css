@@ -1,22 +1,42 @@
 /* ============================================================
-   iOS 6 skeuomorphic personal site - Andrew Columbus
-   All texture/chrome rendered in CSS. No external assets.
+   Cydia "cytyle" web-app skin - Andrew Columbus
+   ------------------------------------------------------------
+   Matches saurik's cytyle stylesheet, the sheet behind real
+   iOS-era web apps (cydia.saurik.com, tlsroot.litten.ca):
+   a 320px column on a 7px pinstripe, 9px-radius white fieldsets
+   ruled with #999 hairlines, bold navy-purple group labels, and
+   a blue gradient press state.
+
+   Every texture is drawn in CSS - the pinstripe and the
+   disclosure chevron are reproductions of cytyle's two tiny
+   PNG tiles, decoded pixel-for-pixel, so nothing is fetched.
+
+   The Liquid Glass theme (glass/glass.css) layers on top of
+   this file and re-pins anything it does not want to inherit.
    ============================================================ */
 
 :root {
-  --pinstripe-base: #c5ccd3;
-  --pinstripe-line: #bcc3cb;
+  /* Pinstripe, decoded from cytyle's 7x1 tile: 5px of #c5ccd4 then 2px of
+     #cbd2d8, over a #c7ced5 ground. Much softer than a naive hairline stripe. */
+  --pinstripe-base: #c7ced5;
+  --pinstripe-dark: #c5ccd4;
+  --pinstripe-light: #cbd2d8;
+  --pinstripe: repeating-linear-gradient(90deg,
+    var(--pinstripe-dark) 0, var(--pinstripe-dark) 5px,
+    var(--pinstripe-light) 5px, var(--pinstripe-light) 7px);
+
   --cell-bg: #ffffff;
-  --cell-bg-active: #027aff;
-  --separator: #c8c7cc;
+  --cell-bg-active: #0374e2;      /* solid fallback under the press gradient */
+  --separator: #999999;           /* cytyle rules rows full-bleed, not inset */
   --text: #000000;
-  --text-detail: #8e8e93;
-  --text-blue: #007aff;
-  --section-header: #6d6d72;
+  --text-detail: #193250;         /* cytyle: label + label */
+  --text-blue: #0000ff;           /* cytyle: links inside a prose block */
+  --section-header: #4d4d70;      /* cytyle: panel > label */
   --navbar-top: #97a6bf;
   --navbar-bottom: #67789a;
   --navbar-border: #2b3a52;
-  --radius: 10px;
+  --radius: 9px;                  /* cytyle fieldset radius */
+  --gutter: 9px;                  /* cytyle fieldset margin */
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -24,25 +44,21 @@
 html, body { margin: 0; padding: 0; }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 17px;
-  line-height: 1.4;
+  /* cytyle asks for plain Helvetica, not Helvetica Neue - it is wider and
+     rounder, and is a large part of why these pages read as "2010 web app". */
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.25;
   color: var(--text);
-  /* iOS 6 grouped table view pinstripe */
   background-color: var(--pinstripe-base);
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--pinstripe-base) 0,
-    var(--pinstripe-base) 3px,
-    var(--pinstripe-line) 3px,
-    var(--pinstripe-line) 4px
-  );
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  background-image: var(--pinstripe);
+  -webkit-text-size-adjust: none;
   min-height: 100vh;
 }
 
-/* The "device screen": centered column on desktop, full width on phones */
+/* The "device screen". cytyle pins its body to a flat 320px (an iPhone 4
+   screen); we deliberately run wider - the cytyle *look* does not depend on
+   the column width, and 420px keeps the prose and row labels readable. */
 .screen {
   max-width: 420px;
   margin: 0 auto;
@@ -50,13 +66,7 @@ body {
   position: relative;
   box-shadow: 0 0 22px rgba(0,0,0,0.18);
   background-color: var(--pinstripe-base);
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--pinstripe-base) 0,
-    var(--pinstripe-base) 3px,
-    var(--pinstripe-line) 3px,
-    var(--pinstripe-line) 4px
-  );
+  background-image: var(--pinstripe);
   overflow: hidden;
 }
 
@@ -107,6 +117,7 @@ body {
 /* ---------- Nav bar ---------- */
 .navbar {
   height: 44px;
+  position: relative;
   display: flex; align-items: center; justify-content: center;
   background:
     linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 50%),
@@ -123,7 +134,7 @@ body {
   letter-spacing: -0.2px;
 }
 
-/* ---------- Theme switch — iOS 6 segmented control (nav bar right slot) ----------
+/* ---------- Theme switch - iOS 6 segmented control (nav bar right slot) ----------
    Lives only in the page header (header.navbar, which is position:relative). The
    drill-down navbars are div.navbar and never receive this control. glass/glass.js
    wires it and keeps aria-checked/tabindex in sync with the active theme. */
@@ -159,7 +170,7 @@ body {
 .theme-toggle .seg + .seg {
   border-left: 1px solid var(--navbar-border);
 }
-/* selected segment reads "pressed in" — darker + inset, classic iOS 6 segmented control */
+/* selected segment reads "pressed in" - darker + inset, classic iOS 6 segmented control */
 .theme-toggle .seg[aria-checked="true"] {
   background: linear-gradient(to bottom, #41506e 0%, #54648a 100%);
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
@@ -175,13 +186,24 @@ body {
 }
 
 /* ---------- Scrollable content ---------- */
-.content { padding: 10px 0 28px; }
+.content { padding: 4px 0 18px; }
 
-/* ---------- Profile header (app-icon style photo + name) ---------- */
-.profile { text-align: center; padding: 18px 16px 6px; }
+/* ---------- Profile header ----------
+   Modelled on the Cydia home page's masthead: a transparent, borderless block
+   with the app icon on the left and the title stack centred beside it. */
+.profile {
+  /* grid, not flex: .name and .tagline are sibling <p>s with no wrapper, so
+     they need to stack in the second column beside the icon. */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "avatar name" "avatar tagline";
+  align-items: center;
+  column-gap: 10px;
+  padding: 10px var(--gutter) 2px;
+}
 .avatar {
-  width: 84px; height: 84px; margin: 0 auto 10px;
-  border-radius: 18px;
+  width: 59px; height: 59px; flex: 0 0 auto; margin: 0;
+  border-radius: 13px;
   background: linear-gradient(to bottom, #8fa3c4, #566a8e);
   box-shadow:
     inset 0 1px 1px rgba(255,255,255,0.6),
@@ -192,44 +214,51 @@ body {
 }
 .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar .initials {
-  font-size: 40px; font-weight: 700; color: #fff;
+  font-size: 28px; font-weight: 700; color: #fff;
   text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
 }
 /* iOS app-icon gloss */
 .avatar::after {
   content: ""; position: absolute; left: 0; right: 0; top: 0; height: 48%;
   background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
-  border-radius: 18px 18px 50% 50% / 18px 18px 22px 22px;
+  border-radius: 13px 13px 50% 50% / 13px 13px 16px 16px;
   pointer-events: none;
 }
 .profile .name {
-  font-size: 24px; font-weight: 700; margin: 0;
-  color: #2b2b2b; text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  font-size: 20px; font-weight: 700; margin: 0;
+  color: #2b2b2b; text-shadow: 0 1px 0 rgba(255,255,255,0.75);
 }
 .profile .tagline {
-  font-size: 14px; color: #5b6470; margin: 3px 0 0;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  font-size: 15px; color: #4d4d70; margin: 2px 0 0;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.75);
 }
+/* the title stack sits to the right of the icon and centres itself, the way
+   Cydia's "Welcome to Cydia / by Jay Freeman" block does */
+.avatar { grid-area: avatar; }
+.profile .name { grid-area: name; text-align: center; }
+.profile .tagline { grid-area: tagline; text-align: center; }
 
-/* ---------- Grouped table view ---------- */
+/* ---------- Grouped table view ----------
+   cytyle: panel > label for the header, panel > fieldset for the group. */
 .section-header {
-  margin: 24px 0 6px;
-  padding: 0 26px;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  position: relative;
+  top: 4px;
+  margin: var(--gutter);
+  padding-left: 11px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: none;      /* cytyle labels are sentence case, never caps */
+  letter-spacing: 0;
   color: var(--section-header);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  text-shadow: rgba(255,255,255,0.75) 1px 1px 0;
 }
 .group {
-  margin: 0 10px;
+  margin: var(--gutter);
   padding: 0;
   list-style: none;
   background: var(--cell-bg);
+  border: 1px solid #999;
   border-radius: var(--radius);
-  border: 1px solid #a9abae;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.5);
   overflow: hidden;
 }
 /* The grouped rows are real <ul><li> lists; the <li> is a transparent wrapper. */
@@ -238,111 +267,122 @@ body {
 .cell {
   display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 11px 14px;
+  min-height: 40px;
+  padding: 10px 14px;
   background: var(--cell-bg);
   position: relative;
   text-decoration: none;
   color: var(--text);
+  font-size: 16px;
 }
-/* hairline separator inset from the left, iOS style (cells are wrapped in <li>) */
+/* cytyle rules each row off with a full-bleed #999 hairline - not an inset,
+   light-gray separator. It is the single loudest tell of the style. */
 li + li > .cell::before {
   content: "";
-  position: absolute; left: 14px; right: 0; top: 0;
+  position: absolute; left: 0; right: 0; top: 0;
   height: 1px; background: var(--separator);
 }
-.cell .label { flex: 0 0 auto; font-size: 17px; }
+/* cytyle: label:first-child is bold, the label after it is navy and right-set */
+.cell .label { flex: 0 0 auto; font-weight: bold; }
 .cell .value {
   margin-left: auto;
   color: var(--text-detail);
-  font-size: 17px;
   text-align: right;
   padding-left: 10px;
 }
 a.cell .label { color: var(--text); }
-a.cell .value { color: var(--text-blue); }
+a.cell .value { color: var(--text-detail); }
 
-/* disclosure chevron */
+/* Disclosure chevron - cytyle ships a 10x13 PNG of a solid #767676 chevron.
+   Redrawn here as an inline SVG of the same size, colour and geometry. */
 a.cell.disclosure, button.cell.disclosure { padding-right: 30px; }
 a.cell.disclosure::after, button.cell.disclosure::after {
   content: "";
   position: absolute; right: 14px; top: 50%;
-  width: 8px; height: 8px; margin-top: -5px;
-  border-right: 2px solid #c0c0c5;
-  border-top: 2px solid #c0c0c5;
-  transform: rotate(45deg);
+  width: 10px; height: 13px; margin-top: -7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='13' viewBox='0 0 10 13'%3E%3Cpath d='M2.4,1.3L7.6,6.5L2.4,11.7' fill='none' stroke='%23767676' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background-size: 10px 13px;
 }
-/* active highlight (touch / hover / keyboard activate) */
+/* Press state - cytyle's .cytyle-dn: a blue gradient, white text, white chevron */
 a.cell:active, a.cell.tapped,
 button.cell:active, button.cell.tapped {
-  background: var(--cell-bg-active);
+  background-color: var(--cell-bg-active);
+  background-image: linear-gradient(to bottom, #058cdf 0%, #015de6 100%);
 }
 a.cell:active .label, a.cell.tapped .label,
 a.cell:active .value, a.cell.tapped .value,
 button.cell:active .label, button.cell.tapped .label,
 button.cell:active .value, button.cell.tapped .value { color: #fff; }
 a.cell:active::after, a.cell.tapped::after,
-button.cell:active::after, button.cell.tapped::after { border-color: #fff; }
+button.cell:active::after, button.cell.tapped::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='13' viewBox='0 0 10 13'%3E%3Cpath d='M2.4,1.3L7.6,6.5L2.4,11.7' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 
 /* Age cell is only interactive on the actual birthday (June 8) */
 .cell.birthday-cell { cursor: pointer; }
-.cell.birthday-cell .value { color: var(--text-blue); }
-.cell.birthday-cell:active, .cell.birthday-cell.tapped { background: var(--cell-bg-active); }
+.cell.birthday-cell:active, .cell.birthday-cell.tapped {
+  background-color: var(--cell-bg-active);
+  background-image: linear-gradient(to bottom, #058cdf 0%, #015de6 100%);
+}
 .cell.birthday-cell:active .label, .cell.birthday-cell.tapped .label,
 .cell.birthday-cell:active .value, .cell.birthday-cell.tapped .value { color: #fff; }
 
-/* Paragraph-style cell (About copy) */
+/* Paragraph-style cell (About copy) - cytyle's fieldset > div block.
+   cytyle centres these paragraphs; kept left-aligned here because this one
+   carries a multi-paragraph bio rather than a one-line blurb. */
 .cell.prose {
   display: block;
-  padding: 14px 16px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #2b2b2b;
+  padding: 9px 13px;
+  line-height: 1.35;
+  color: var(--text);
 }
-.cell.prose p { margin: 0 0 11px; }
+.cell.prose p { margin: 0 0 9px; }
 .cell.prose p:last-child { margin-bottom: 0; }
-.cell.prose .water { color: #2b2b2b; }
+.cell.prose a { color: var(--text-blue); }
 
-/* sub detail line under a work item */
+/* Secondary line under a row - cytyle's label.lower: block, 13px, navy */
 .cell.stacked { flex-direction: column; align-items: flex-start; }
-.cell.stacked .label { font-weight: 600; }
+.cell.stacked .label { font-weight: bold; }
 .cell.stacked .sub {
-  font-size: 13px; color: var(--text-detail); margin-top: 2px; padding-right: 18px;
+  display: block; font-size: 13px; color: var(--text-detail);
+  margin-top: 2px; padding-right: 18px;
 }
-a.cell.stacked:active .sub, a.cell.stacked.tapped .sub { color: rgba(255,255,255,0.85); }
+a.cell.stacked:active .sub, a.cell.stacked.tapped .sub { color: rgba(255,255,255,0.9); }
 
-/* iOS notification badge bubble (e.g. "Current"), pinned to the top corner */
+/* Corner tab ("Current") - cytyle pins these flush into a row corner with a
+   single rounded inner corner, rather than floating a pill above the row. */
 .badge {
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 0;
+  right: 0;
   z-index: 2;
-  background: linear-gradient(to bottom, #ff7b7b 0%, #e23b3b 52%, #d12f2f 100%);
+  background-color: #da0812;
   color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  padding: 4px 9px;
-  border-radius: 11px;
-  min-width: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.25;
+  padding: 0.2em 0.45em;
+  border-bottom-left-radius: 7px;
   text-align: center;
-  border: 1px solid rgba(0,0,0,0.28);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 2px rgba(0,0,0,0.3);
-  text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
   white-space: nowrap;
 }
 
-/* Stacked work cell that also carries a corner badge */
-.cell.stack-badge { position: relative; flex-direction: row; align-items: center; padding-top: 13px; }
+/* Stacked work cell that also carries a corner tab */
+.cell.stack-badge { position: relative; flex-direction: row; align-items: center; }
 .cell.stack-badge .cell-text { display: flex; flex-direction: column; min-width: 0; }
-.cell.stack-badge .label { font-weight: 600; }
-.cell.stack-badge .sub { font-size: 13px; color: var(--text-detail); margin-top: 2px; padding-right: 6px; }
-a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255,255,255,0.85); }
+.cell.stack-badge .label { font-weight: bold; padding-right: 62px; }
+.cell.stack-badge .sub {
+  display: block; font-size: 13px; color: var(--text-detail);
+  margin-top: 2px; padding-right: 6px;
+}
+a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255,255,255,0.9); }
 
-/* iOS 6-era glossy app-icon tile: holds a logo image or an emoji */
+/* iOS-era glossy app-icon tile: holds a logo image or an emoji.
+   cytyle sizes img.icon at 30px with a 5px margin, so the text column starts
+   40px in from the row's left edge - reproduced here with flex. */
 .app-icon {
   position: relative;
-  width: 30px; height: 30px; flex: 0 0 auto; margin-right: 11px;
+  width: 30px; height: 30px; flex: 0 0 auto; margin: 0 5px 0 0;
   border-radius: 6px; overflow: hidden; background: #fff;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 1px 1px rgba(0,0,0,0.14);
   display: flex; align-items: center; justify-content: center;
@@ -356,13 +396,16 @@ a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255
 .app-icon.emoji { font-size: 18px; line-height: 1; }
 .app-icon.emoji::after { display: none; }
 
-/* Cell with a left icon/logo + stacked text (favicon links, education) */
+/* Rows carrying an icon: 5px + 30px + 5px puts the text column at 40px. */
+.cell.iconcell, .cell.stack-badge { padding-left: 5px; }
 .cell.iconcell { align-items: center; }
 .cell.iconcell .cell-text { display: flex; flex-direction: column; min-width: 0; }
-.cell.iconcell .label { font-weight: 600; }
-.cell.iconcell .sub { font-size: 13px; color: var(--text-detail); margin-top: 2px; }
+.cell.iconcell .label { font-weight: bold; }
+.cell.iconcell .sub {
+  display: block; font-size: 13px; color: var(--text-detail); margin-top: 2px;
+}
 a.cell.iconcell:active .sub, a.cell.iconcell.tapped .sub,
-button.cell.iconcell:active .sub, button.cell.iconcell.tapped .sub { color: rgba(255,255,255,0.85); }
+button.cell.iconcell:active .sub, button.cell.iconcell.tapped .sub { color: rgba(255,255,255,0.9); }
 
 /* ---------- Drill-down detail view (iOS push navigation) ---------- */
 .detail-view {
@@ -370,9 +413,7 @@ button.cell.iconcell:active .sub, button.cell.iconcell.tapped .sub { color: rgba
   top: 20px; /* sit just below the status bar */
   left: 0; right: 0; bottom: 0;
   background-color: var(--pinstripe-base);
-  background-image: repeating-linear-gradient(90deg,
-    var(--pinstripe-base) 0, var(--pinstripe-base) 3px,
-    var(--pinstripe-line) 3px, var(--pinstripe-line) 4px);
+  background-image: var(--pinstripe);
   transform: translateX(100%);
   transition: transform 0.32s ease;
   z-index: 20;
@@ -387,7 +428,6 @@ body.modal-open { overflow: hidden; }
    gloss; the diamond uses the SAME gloss rotated -45deg in its local space so
    that, once the diamond itself is rotated +45deg, the sheen lines up with the
    body and the whole pentagon reads as one continuous glossy, rounded shape. */
-.navbar { position: relative; }
 .back-btn {
   /* shared two-tone iOS 6 gloss, reused by the body and the arrow tail */
   --back-gloss-top: #9aa9c2;
@@ -433,14 +473,13 @@ body.modal-open { overflow: hidden; }
 }
 .back-btn:active { filter: brightness(0.9); }
 
-/* ---------- Footer ---------- */
+/* ---------- Footer (cytyle: panel > footer) ---------- */
 .footer {
   text-align: center;
-  margin-top: 26px;
-  padding: 0 24px;
+  margin: 18px var(--gutter) var(--gutter);
   font-size: 12px;
-  color: #707880;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  color: var(--section-header);
+  text-shadow: rgba(255,255,255,0.75) 1px 1px 0;
 }
 
 /* ---------- Toast (iOS HUD style) ---------- */
@@ -545,8 +584,7 @@ body.modal-open { overflow: hidden; }
 }
 
 @media (min-width: 480px) {
-  /* Cydia-style: flush column on the pinstripe, no framing border/shadow,
-     same 420px content dimensions. */
+  /* Cydia-style: flush 320px column on the pinstripe, no framing shadow. */
   .screen { box-shadow: none; border-radius: 0; min-height: 100vh; }
   /* Bigger IUPUI photo on desktop */
   .alert { width: 340px; }

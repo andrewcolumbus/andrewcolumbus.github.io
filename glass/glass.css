@@ -613,3 +613,103 @@ html.theme-glass #toast {
     background-color: var(--g-solid-fallback);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Re-pin the metrics that styles.css now sets to cytyle's values.
+   ---------------------------------------------------------------------------
+   styles.css is a faithful reproduction of saurik's cytyle sheet: a 320px
+   column, Helvetica 16px, 9px radii, 9px gutters, full-bleed #999 hairlines,
+   an SVG disclosure chevron and flush corner-tab badges. Liquid Glass wants
+   none of that geometry, so everything below restores the values Glass was
+   built against. Only properties styles.css sets and the Glass rules above do
+   NOT already declare appear here - nothing here overrides a Glass decision.
+   --------------------------------------------------------------------------- */
+html.theme-glass body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.4;
+}
+html.theme-glass .content { padding: 10px 0 28px; }
+
+/* Profile: Glass keeps the centered masthead, not cytyle's icon-left header. */
+html.theme-glass .profile {
+  display: block;
+  text-align: center;
+  padding: 18px 16px 6px;
+}
+html.theme-glass .avatar { width: 84px; height: 84px; margin: 0 auto 10px; }
+html.theme-glass .avatar .initials { font-size: 40px; }
+html.theme-glass .profile .name { font-size: 24px; }
+html.theme-glass .profile .tagline { font-size: 14px; margin: 3px 0 0; }
+
+/* Section headers: Glass keeps the small uppercase chip. */
+html.theme-glass .section-header {
+  position: static;
+  top: auto;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Grouped table view: Glass keeps 10px side gutters and inset hairlines. */
+html.theme-glass .group { margin: 0 10px; }
+html.theme-glass li + li > .cell::before { left: 14px; }
+
+html.theme-glass .cell {
+  min-height: 44px;
+  padding: 11px 14px;
+  font-size: 17px;
+}
+/* The line above is a `padding` shorthand at the same specificity as
+   `a.cell.disclosure { padding-right: 30px }` in styles.css, and loads later -
+   so the chevron's clearance has to be restated here or the value text runs
+   underneath the arrow. */
+html.theme-glass a.cell.disclosure,
+html.theme-glass button.cell.disclosure { padding-right: 30px; }
+html.theme-glass .cell .label { font-size: 17px; font-weight: 600; }
+html.theme-glass .cell .value { font-size: 17px; }
+html.theme-glass a.cell .value { color: var(--text-blue); }
+html.theme-glass .cell.iconcell,
+html.theme-glass .cell.stack-badge { padding-left: 14px; }
+html.theme-glass .cell.stack-badge { padding-top: 13px; }
+html.theme-glass .cell.stack-badge .label { padding-right: 0; }
+html.theme-glass .app-icon { margin-right: 11px; }
+
+/* Disclosure chevron: Glass keeps the rotated-border arrow, not cytyle's SVG.
+   `background: none` also neutralises the white-SVG swap on the active row. */
+html.theme-glass a.cell.disclosure::after,
+html.theme-glass button.cell.disclosure::after {
+  width: 8px;
+  height: 8px;
+  margin-top: -5px;
+  background: none;
+  border-right: 2px solid var(--text-detail);
+  border-top: 2px solid var(--text-detail);
+  transform: rotate(45deg);
+}
+
+/* Badge: Glass keeps the floating pill, not cytyle's flush corner tab. */
+html.theme-glass .badge {
+  top: 6px;
+  right: 8px;
+  padding: 4px 9px;
+  border-radius: 11px;
+  min-width: 20px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+html.theme-glass .cell.prose {
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+html.theme-glass .cell.prose p { margin: 0 0 11px; }
+html.theme-glass .cell.prose p:last-child { margin-bottom: 0; }
+
+html.theme-glass .footer {
+  margin: 26px 0 0;
+  padding: 0 24px;
+  text-shadow: none;
+}
