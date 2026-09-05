@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="38" height="20" viewBox="0 0 38 20" fill="#bfbfbf" shape-rendering="crispEdges">
+  <!-- 1/5 reception. Original active bar geometry; inactive bars are
+       2 Retina pixels tall (1 CSS px), as in the low-signal reference. -->
+  <path d="M0 12h6v8H0zM8 18h6v2H8zM16 18h6v2H16zM24 18h6v2H24zM32 18h6v2H32z"/>
+</svg>

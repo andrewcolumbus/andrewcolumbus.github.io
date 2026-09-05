@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1" height="20" viewBox="0 0 1 20" shape-rendering="crispEdges">
+  <!-- Original 1x rows, x=100 y=10, color-managed from Generic RGB to sRGB.
+       See docs/reference/README.md and docs/header-pixel-check.html. -->
+  <path fill="#607d9c" d="M0 0h1v1H0z"/>
+  <path fill="#607d9c" d="M0 1h1v1H0z"/>
+  <path fill="#607c9c" d="M0 2h1v1H0z"/>
+  <path fill="#5e7b9b" d="M0 3h1v1H0z"/>
+  <path fill="#5d7a9a" d="M0 4h1v1H0z"/>
+  <path fill="#5b7899" d="M0 5h1v1H0z"/>
+  <path fill="#587797" d="M0 6h1v1H0z"/>
+  <path fill="#567596" d="M0 7h1v1H0z"/>
+  <path fill="#557495" d="M0 8h1v1H0z"/>
+  <path fill="#537394" d="M0 9h1v1H0z"/>
+  <path fill="#527192" d="M0 10h1v1H0z"/>
+  <path fill="#4f7092" d="M0 11h1v1H0z"/>
+  <path fill="#4f7092" d="M0 12h1v1H0z"/>
+  <path fill="#4f7092" d="M0 13h1v1H0z"/>
+  <path fill="#4f7092" d="M0 14h1v1H0z"/>
+  <path fill="#4f7092" d="M0 15h1v1H0z"/>
+  <path fill="#4f7092" d="M0 16h1v1H0z"/>
+  <path fill="#4f7092" d="M0 17h1v1H0z"/>
+  <path fill="#4f7092" d="M0 18h1v1H0z"/>
+  <path fill="#4f7092" d="M0 19h1v1H0z"/>
+</svg>

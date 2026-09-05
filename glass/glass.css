@@ -180,7 +180,9 @@ html.theme-glass .navbar {
 html.theme-glass .navbar h1 {
   color: var(--text);
   text-shadow: none;
+  letter-spacing: -0.2px;
 }
+html.theme-glass .navbar::after { display: none; }
 
 /* Toggle: frosted pill, with the selected segment as a frosted capsule. */
 html.theme-glass .theme-toggle {
@@ -248,14 +250,28 @@ html.theme-glass .battery {
   height: 11px;
   margin-left: 8px;
   margin-right: 0;
-  border-color: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 2px;
+  padding: 1px;
+  background: none;
   box-shadow: none;
 }
-html.theme-glass .battery::after { top: 3px; height: 5px; background: var(--text); }
-html.theme-glass .battery span { background: var(--text); border-radius: 1px; }
+html.theme-glass .battery::after {
+  content: ""; position: absolute; right: -3px; top: 3px;
+  width: 2px; height: 5px; border-radius: 0 1px 1px 0;
+  background: var(--text);
+}
+html.theme-glass .battery span {
+  display: block; height: 100%; width: 82%;
+  background: var(--text); border-radius: 1px;
+}
 /* iOS 26 cellular: four rounded bars, independent of the five iOS 6 steps. */
-html.theme-glass .signal { height: 10px; }
+html.theme-glass .signal {
+  display: flex; align-items: flex-end; gap: 1px;
+  width: auto; height: 10px; margin-left: 0; background: none; filter: none;
+}
 html.theme-glass .statusbar .signal i {
+  display: block; width: 3px;
   background: var(--text); border-radius: 1px; box-shadow: none;
 }
 html.theme-glass .statusbar .signal i:nth-child(1) { height: 4px; }

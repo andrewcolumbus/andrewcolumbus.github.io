@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1" height="3" viewBox="0 0 1 3" shape-rendering="crispEdges">
+  <!-- Color-managed reference shadow over white: #dbdbdb, #ececec, #f9f9f9. -->
+  <path fill-opacity="0.14117647" d="M0 0h1v1H0z"/>
+  <path fill-opacity="0.0745098" d="M0 1h1v1H0z"/>
+  <path fill-opacity="0.02352941" d="M0 2h1v1H0z"/>
+</svg>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS 6 header and signal pixel comparison</title>
+<style>
+  body { max-width: 900px; margin: 32px auto; padding: 0 20px; font: 16px/1.5 system-ui; color: #222; background: #fafafa; }
+  h1 { font-size: 24px; } h2 { font-size: 19px; margin: 24px 0 12px; }
+  .samples { display: flex; flex-wrap: wrap; gap: 24px; }
+  figure { margin: 0; } canvas { image-rendering: pixelated; }
+  figcaption { font-size: 13px; }
+  output { display: block; padding: 12px; margin: 12px 0; background: #eee; white-space: pre-line; }
+  iframe { position: absolute; left: -10000px; width: 320px; height: 800px; border: 0; }
+</style>
+<h1>iOS 6 header and signal pixel comparison</h1>
+<p>These tests read the assets and geometry selected by the actual site stylesheet.
+Signal pixels are compared at native 2× resolution on black; header color rows
+are compared at their reference's native 1× resolution. Samples are enlarged
+without smoothing. Black differences mean identical RGB pixels.</p>
+<div id="checks"></div>
+<output id="result" role="status">Loading references and site…</output>
+<p>Header source: Matt Neuburg's <a href="https://www.apeth.com/iOSBook/ch25.html#FIGnavbar">iOS 6 navigation-bar example</a>,
+figure 25.21. Signal source: <a href="https://commons.wikimedia.org/wiki/File:IOS_6_Status_Bar.png">TheMostAmazingTechnik's iOS 6 device screenshot</a>.
+This checks header paint, shadow, glyphs and layout—not a pixel-identical copy
+of the original title/buttons. The site's custom text stays live HTML.</p>
+<p><a href="battery-pixel-check.html">Battery pixel check</a> · <a href="../index.html">Site preview</a></p>
+<iframe id="site" title="Site geometry verification" aria-hidden="true" tabindex="-1"></iframe>
+<script>
+  const image = src => new Promise((resolve, reject) => {
+    const img = new Image(); img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Could not load ' + src)); img.src = src;
+  });
+  const frame = document.getElementById('site');
+  const ready = new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
+  frame.src = '../index.html?pixel-check=' + Date.now();
+  (async () => {
+    const [status, header] = await Promise.all([
+      image('reference/ios6-status-original.png'), image('reference/ios6-header-original.png'), ready
+    ]);
+    const doc = frame.contentDocument, win = frame.contentWindow;
+    const initialLevel = Number(doc.documentElement.dataset.signal);
+    doc.documentElement.dataset.signal = '5';
+    doc.documentElement.classList.remove('theme-glass'); doc.documentElement.classList.add('theme-ios');
+    const cases = [
+      { name: 'Signal bars', selector: '.signal', source: status, crop: [8, 9, 38, 20], size: '19px 10px', scale: 2, bg: '#000', zoom: 5 },
+      { name: 'Status-bar background', selector: '.statusbar', source: header, crop: [100, 10, 16, 20], size: '1px 20px', scale: 1, zoom: 4 },
+      { name: 'Navigation-bar background', selector: 'header.navbar', source: header, crop: [100, 30, 16, 44], size: '1px 44px', scale: 1, zoom: 4 },
+      { name: 'Navigation-bar shadow', selector: 'header.navbar', pseudo: '::after', source: header, crop: [100, 74, 16, 3], size: '1px 3px', scale: 1, bg: '#fff', zoom: 4 }
+    ];
+    let pass = Number.isInteger(initialLevel) && initialLevel >= 1 && initialLevel <= 5;
+    for (const test of cases) {
+      const [x, y, width, height] = test.crop;
+      const element = doc.querySelector(test.selector), style = win.getComputedStyle(element, test.pseudo);
+      const url = style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+      if (!url) throw new Error(test.name + ': missing background asset');
+      const asset = await image(url[1]);
+      const section = document.createElement('section');
+      const heading = document.createElement('h2'); heading.textContent = test.name; section.append(heading);
+      const samples = document.createElement('div'); samples.className = 'samples'; section.append(samples);
+      const contexts = ['Reference', 'Site asset', 'Absolute difference'].map(label => {
+        const figure = document.createElement('figure'), canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.style.width = width * test.zoom + 'px'; canvas.style.height = height * test.zoom + 'px';
+        const caption = document.createElement('figcaption'); caption.textContent = label;
+        figure.append(canvas, caption); samples.append(figure); return canvas.getContext('2d');
+      });
+      const [ref, actual, diff] = contexts;
+      ref.drawImage(test.source, x, y, width, height, 0, 0, width, height);
+      actual.fillStyle = test.bg || '#fff'; actual.fillRect(0, 0, width, height);
+      const [tileWidth, tileHeight] = style.backgroundSize.split(' ').map(value => parseFloat(value) * test.scale);
+      for (let left = 0; left < width; left += tileWidth) actual.drawImage(asset, left, 0, tileWidth, tileHeight);
+      const expected = ref.getImageData(0, 0, width, height).data;
+      const observed = actual.getImageData(0, 0, width, height).data;
+      const difference = diff.createImageData(width, height);
+      let changed = 0, maxError = 0;
+      for (let i = 0; i < expected.length; i += 4) {
+        let pixelChanged = false;
+        for (let c = 0; c < 3; c++) {
+          const error = Math.abs(expected[i + c] - observed[i + c]);
+          difference.data[i + c] = error; maxError = Math.max(maxError, error); pixelChanged ||= error !== 0;
+        }
+        difference.data[i + 3] = 255; changed += Number(pixelChanged);
+      }
+      diff.putImageData(difference, 0, 0);
+      const matches = changed === 0 && style.backgroundSize === test.size;
+      pass &&= matches;
+      const output = document.createElement('output');
+      output.textContent = (matches ? 'PASS' : 'FAIL') + ': ' + changed + ' / ' + width * height +
+        ' pixels differ; maximum channel error: ' + maxError + '. Background size: ' + style.backgroundSize + '.';
+      section.append(output); document.getElementById('checks').append(section);
+      if (changed && test.selector !== '.signal') {
+        const palette = document.createElement('pre');
+        palette.style.whiteSpace = 'pre-wrap';
+        palette.textContent = 'Reference sRGB rows: ' + Array.from({ length: height }, (_, row) =>
+          Array.from(expected.slice(row * width * 4, row * width * 4 + 3), value => value.toString(16).padStart(2, '0')).join('')
+        ).join(' ');
+        section.append(palette);
+      }
+    }
+    const notes = ['Initial random signal level: ' + initialLevel + ' / 5.'];
+    // Lower levels are reference-derived: keep the original active columns,
+    // collapse inactive columns to the 1px baseline dashes in the low-signal shot.
+    const sourceCanvas = document.createElement('canvas'); sourceCanvas.width = 38; sourceCanvas.height = 20;
+    const referenceSignal = sourceCanvas.getContext('2d'); referenceSignal.drawImage(status, 8, 9, 38, 20, 0, 0, 38, 20);
+    const fullPixels = referenceSignal.getImageData(0, 0, 38, 20);
+    for (let level = 1; level <= 5; level++) {
+      doc.documentElement.dataset.signal = String(level);
+      const style = win.getComputedStyle(doc.querySelector('.signal'));
+      const asset = await image(style.backgroundImage.match(/url\(["']?(.*?)["']?\)/)[1]);
+      const canvas = document.createElement('canvas'); canvas.width = 38; canvas.height = 20;
+      const ctx = canvas.getContext('2d'); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 38, 20); ctx.drawImage(asset, 0, 0, 38, 20);
+      const pixels = ctx.getImageData(0, 0, 38, 20).data;
+      let changed = 0;
+      for (let y = 0; y < 20; y++) for (let x = 0; x < 38; x++) {
+        const barIndex = Math.floor(x / 8), inactiveTop = barIndex >= level && y < 18;
+        const offset = (y * 38 + x) * 4;
+        const expected = inactiveTop ? 0 : fullPixels.data[offset];
+        if (pixels[offset] !== expected || pixels[offset + 1] !== expected || pixels[offset + 2] !== expected) changed++;
+      }
+      pass &&= changed === 0;
+      notes.push((changed === 0 ? 'PASS' : 'FAIL') + ' signal level ' + level + ': ' + changed + ' / 760 pixels differ from reference-derived geometry.');
+    }
+    for (const width of [320, 375, 420]) {
+      frame.style.width = width + 'px';
+      const bar = doc.querySelector('.statusbar').getBoundingClientRect();
+      const signal = doc.querySelector('.signal').getBoundingClientRect();
+      const battery = doc.querySelector('.battery').getBoundingClientRect();
+      const nav = doc.querySelector('header.navbar').getBoundingClientRect();
+      const title = doc.querySelector('header.navbar h1').getBoundingClientRect();
+      const toggle = doc.querySelector('.theme-toggle').getBoundingClientRect();
+      const shadow = win.getComputedStyle(doc.querySelector('header.navbar'), '::after');
+      const geometry = bar.height === 20 && signal.width === 19 && signal.height === 10 &&
+        signal.left - bar.left === 4 && signal.top - bar.top === 4.5 &&
+        battery.width === 21 && battery.height === 10 && battery.top - bar.top === 4.5 && bar.right - battery.right === 3 &&
+        nav.height === 44 && nav.top === bar.bottom && title.right <= toggle.left &&
+        parseFloat(shadow.top) === 44 && shadow.height === '3px';
+      pass &&= geometry; notes.push((geometry ? 'PASS' : 'FAIL') + ' geometry at ' + width + 'px: 20px status / 44px nav; source glyph insets; title clears toggle; 3px shadow below nav.');
+    }
+    doc.documentElement.classList.replace('theme-ios', 'theme-glass');
+    const modernSignal = win.getComputedStyle(doc.querySelector('.signal'));
+    const modernBars = [...doc.querySelectorAll('.signal i')].filter(el => win.getComputedStyle(el).display !== 'none');
+    const glass = modernSignal.backgroundImage === 'none' && modernBars.length === 4 &&
+      win.getComputedStyle(doc.querySelector('.battery')).backgroundImage === 'none' &&
+      win.getComputedStyle(doc.querySelector('header.navbar'), '::after').display === 'none';
+    pass &&= glass; notes.push((glass ? 'PASS' : 'FAIL') + ' Glass isolation: four modern bars, independent battery, no iOS header shadow.');
+    document.getElementById('result').textContent = (pass ? 'ALL CHECKS PASS' : 'CHECKS FAILED') + '\n' + notes.join('\n');
+    document.documentElement.dataset.result = pass ? 'pass' : 'fail';
+  })().catch(error => {
+    document.getElementById('result').textContent = 'ERROR: ' + error.message;
+    document.documentElement.dataset.result = 'error';
+  });
+</script>
+</html>

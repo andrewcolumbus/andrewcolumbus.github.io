@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="38" height="20" viewBox="0 0 38 20" fill="#bfbfbf" shape-rendering="crispEdges">
+  <!-- Exact Retina source crop: 38x20+8+9 from the iOS 6 status bar.
+       Six-pixel bars, two-pixel gaps; heights 8, 10, 13, 16, 20. -->
+  <path d="M0 12h6v8H0zM8 10h6v10H8zM16 7h6v13H16zM24 4h6v16H24zM32 0h6v20H32z"/>
+</svg>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS 6 battery pixel comparison</title>
+<style>
+  body { max-width: 760px; margin: 40px auto; padding: 0 20px; font: 16px/1.5 system-ui; color: #222; background: #fafafa; }
+  h1 { font-size: 24px; }
+  .samples { display: flex; flex-wrap: wrap; gap: 24px; }
+  figure { margin: 0; }
+  canvas { width: 252px; height: 120px; image-rendering: pixelated; background: #000; }
+  figcaption { margin-top: 8px; }
+  output { display: block; padding: 16px; margin: 24px 0; background: #eee; white-space: pre-line; }
+  iframe { position: absolute; left: -10000px; width: 320px; height: 100px; border: 0; }
+</style>
+<h1>iOS 6 battery pixel comparison</h1>
+<p>The original 42 × 20 Retina pixels and the site's SVG, rendered over the
+original black background. Both samples below are enlarged 6× without smoothing.</p>
+<div class="samples">
+  <figure><canvas id="reference" width="42" height="20"></canvas><figcaption>Original screenshot crop</figcaption></figure>
+  <figure><canvas id="actual" width="42" height="20"></canvas><figcaption>Site battery</figcaption></figure>
+  <figure><canvas id="difference" width="42" height="20"></canvas><figcaption>Absolute RGB difference (black = identical)</figcaption></figure>
+</div>
+<output id="result" role="status">Loading original pixels and the current site…</output>
+<p><a href="https://commons.wikimedia.org/wiki/File:IOS_6_Status_Bar.png">Source:</a>
+TheMostAmazingTechnik's August 3, 2013 device screenshot, listed as public domain
+(simple geometry). Crop: x=592, y=9, width=42, height=20, with no resampling.</p>
+<p>The source shows a full battery. The asset preserves that state and its gray
+levels. Black background pixels become transparent so the site's blue status bar
+can show through; the comparison restores black. Exactness refers to this
+documented glyph at its native 2× resolution.</p>
+<iframe id="site" title="Site geometry verification" src="../index.html" aria-hidden="true" tabindex="-1"></iframe>
+<script>
+  const loadImage = src => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Could not load ' + src));
+    img.src = src;
+  });
+  const frame = document.getElementById('site');
+  const siteReady = new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
+  (async () => {
+    const [source] = await Promise.all([loadImage('reference/ios6-status-original.png'), siteReady]);
+    const doc = frame.contentDocument;
+    doc.documentElement.classList.remove('theme-glass');
+    doc.documentElement.classList.add('theme-ios');
+    const battery = doc.querySelector('.battery');
+    const style = frame.contentWindow.getComputedStyle(battery);
+    const url = style.backgroundImage.match(/url\(["']?(.*?)["']?\)/)[1];
+    const asset = await loadImage(url);
+    const ref = document.getElementById('reference').getContext('2d');
+    const actual = document.getElementById('actual').getContext('2d');
+    const diff = document.getElementById('difference').getContext('2d');
+    ref.drawImage(source, 592, 9, 42, 20, 0, 0, 42, 20);
+    actual.fillStyle = '#000';
+    actual.fillRect(0, 0, 42, 20);
+    actual.drawImage(asset, 0, 0, parseFloat(style.width) * 2, parseFloat(style.height) * 2);
+    const expected = ref.getImageData(0, 0, 42, 20).data;
+    const observed = actual.getImageData(0, 0, 42, 20).data;
+    const difference = diff.createImageData(42, 20);
+    let changed = 0, maxError = 0;
+    for (let i = 0; i < expected.length; i += 4) {
+      let pixelChanged = false;
+      for (let c = 0; c < 3; c++) {
+        const error = Math.abs(expected[i + c] - observed[i + c]);
+        difference.data[i + c] = error;
+        maxError = Math.max(maxError, error);
+        pixelChanged ||= error !== 0;
+      }
+      difference.data[i + 3] = 255;
+      changed += Number(pixelChanged);
+    }
+    diff.putImageData(difference, 0, 0);
+    const rect = battery.getBoundingClientRect();
+    const bar = doc.querySelector('.statusbar').getBoundingClientRect();
+    const top = rect.top - bar.top, right = bar.right - rect.right;
+    const geometryMatches = rect.width === 21 && rect.height === 10 && top === 4.5 && right === 3;
+    const pass = changed === 0 && geometryMatches;
+    document.getElementById('result').textContent =
+      (pass ? 'PASS' : 'FAIL') + ': ' + changed + ' / 840 pixels differ; maximum channel error: ' + maxError + '.\n' +
+      'Site geometry: ' + rect.width + ' × ' + rect.height + ' CSS px; top: ' + top + 'px; right inset: ' + right + 'px.';
+    document.documentElement.dataset.result = pass ? 'pass' : 'fail';
+  })().catch(error => {
+    document.getElementById('result').textContent = 'ERROR: ' + error.message;
+    document.documentElement.dataset.result = 'error';
+  });
+</script>
+</html>

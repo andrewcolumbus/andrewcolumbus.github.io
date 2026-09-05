@@ -20,6 +20,11 @@
     document.documentElement.classList.add(t === "glass" ? "theme-glass" : "theme-ios");
   })();
 </script>
+<!-- Decorative reception: choose once per document load, before first paint.
+     No polling, persistence, or changes to the theme-agnostic main.js. -->
+<script>
+  document.documentElement.dataset.signal = String(1 + Math.floor(Math.random() * 5));
+</script>
 <link rel="canonical" href="https://andrewcolumbus.me/">
 <title>Andrew Columbus</title>
 <meta name="description" content="Andrew Columbus - founder of Immersivegroup, making immersive experiences accessible and scalable.">

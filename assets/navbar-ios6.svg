@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1" height="44" viewBox="0 0 1 44" shape-rendering="crispEdges">
+  <!-- Original 1x rows, x=100 y=30, color-managed from Generic RGB to sRGB.
+       See docs/reference/README.md and docs/header-pixel-check.html. -->
+  <path fill="#f1f4f6" d="M0 0h1v1H0z"/>
+  <path fill="#ccd7e5" d="M0 1h1v1H0z"/>
+  <path fill="#c9d5e3" d="M0 2h1v1H0z"/>
+  <path fill="#c7d3e2" d="M0 3h1v1H0z"/>
+  <path fill="#c6d2e1" d="M0 4h1v1H0z"/>
+  <path fill="#c4d1e0" d="M0 5h1v1H0z"/>
+  <path fill="#c3cfdf" d="M0 6h1v1H0z"/>
+  <path fill="#c1cede" d="M0 7h1v1H0z"/>
+  <path fill="#becddc" d="M0 8h1v1H0z"/>
+  <path fill="#bbcbdb" d="M0 9h1v1H0z"/>
+  <path fill="#bbc9da" d="M0 10h1v1H0z"/>
+  <path fill="#b8c7d8" d="M0 11h1v1H0z"/>
+  <path fill="#b6c5d7" d="M0 12h1v1H0z"/>
+  <path fill="#b4c3d5" d="M0 13h1v1H0z"/>
+  <path fill="#b1c1d4" d="M0 14h1v1H0z"/>
+  <path fill="#aebfd2" d="M0 15h1v1H0z"/>
+  <path fill="#acbdd1" d="M0 16h1v1H0z"/>
+  <path fill="#aabbcf" d="M0 17h1v1H0z"/>
+  <path fill="#a7b8cd" d="M0 18h1v1H0z"/>
+  <path fill="#a4b6cb" d="M0 19h1v1H0z"/>
+  <path fill="#a2b4ca" d="M0 20h1v1H0z"/>
+  <path fill="#9fb2c8" d="M0 21h1v1H0z"/>
+  <path fill="#9cafc6" d="M0 22h1v1H0z"/>
+  <path fill="#99adc5" d="M0 23h1v1H0z"/>
+  <path fill="#97abc3" d="M0 24h1v1H0z"/>
+  <path fill="#94a8c1" d="M0 25h1v1H0z"/>
+  <path fill="#91a6c0" d="M0 26h1v1H0z"/>
+  <path fill="#8ea4be" d="M0 27h1v1H0z"/>
+  <path fill="#8ba2bc" d="M0 28h1v1H0z"/>
+  <path fill="#899fba" d="M0 29h1v1H0z"/>
+  <path fill="#869db8" d="M0 30h1v1H0z"/>
+  <path fill="#829ab7" d="M0 31h1v1H0z"/>
+  <path fill="#8099b5" d="M0 32h1v1H0z"/>
+  <path fill="#7f97b4" d="M0 33h1v1H0z"/>
+  <path fill="#7c95b2" d="M0 34h1v1H0z"/>
+  <path fill="#7a93b1" d="M0 35h1v1H0z"/>
+  <path fill="#7891b0" d="M0 36h1v1H0z"/>
+  <path fill="#758fae" d="M0 37h1v1H0z"/>
+  <path fill="#738dad" d="M0 38h1v1H0z"/>
+  <path fill="#718cab" d="M0 39h1v1H0z"/>
+  <path fill="#6f8baa" d="M0 40h1v1H0z"/>
+  <path fill="#6e89aa" d="M0 41h1v1H0z"/>
+  <path fill="#6b88a9" d="M0 42h1v1H0z"/>
+  <path fill="#4e6f91" d="M0 43h1v1H0z"/>
+</svg>

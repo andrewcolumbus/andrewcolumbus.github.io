@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="42" height="20" viewBox="0 0 42 20" fill="#bfbfbf" shape-rendering="crispEdges">
+  <!-- Original iOS 6 Retina battery pixels, crop 42x20+592+9.
+       Source and exact pixel comparison: ../docs/battery-pixel-check.html.
+       Each path preserves a source gray level as coverage over black.
+       The original full charge, terminal and edge pixels are unchanged. -->
+  <path opacity="0.036649214660" d="M40 14h1v1H40z"/>
+  <path opacity="0.057591623037" d="M35 2h1v1H35zM35 3h1v1H35zM3 4h1v1H3zM35 4h1v1H35zM3 5h1v1H3zM35 5h1v1H35zM3 6h1v1H3zM35 6h1v1H35zM3 7h1v1H3zM35 7h1v1H35zM3 8h1v1H3zM35 8h1v1H35zM39 8h1v1H39zM3 9h1v1H3zM35 9h1v1H35zM39 9h1v1H39zM3 10h1v1H3zM35 10h1v1H35zM39 10h1v1H39zM3 11h1v1H3zM35 11h1v1H35zM3 12h1v1H3zM35 12h1v1H35zM3 13h1v1H3zM35 13h1v1H35zM3 14h1v1H3zM35 14h1v1H35zM3 15h1v1H3zM35 15h1v1H35zM35 16h1v1H35z"/>
+  <path opacity="0.068062827225" d="M38 14h2v1H38zM2 17h33v1H2z"/>
+  <path opacity="0.120418848168" d="M35 17h1v1H35z"/>
+  <path opacity="0.130890052356" d="M38 11h1v1H38z"/>
+  <path opacity="0.183246073298" d="M39 11h1v1H39z"/>
+  <path opacity="0.345549738220" d="M37 19h1v1H37z"/>
+  <path opacity="0.403141361257" d="M37 0h1v1H37z"/>
+  <path opacity="0.413612565445" d="M0 19h1v1H0z"/>
+  <path opacity="0.465968586387" d="M0 0h1v1H0z"/>
+  <path opacity="0.492146596859" d="M41 6h1v1H41z"/>
+  <path opacity="0.523560209424" d="M41 13h1v1H41z"/>
+  <path opacity="0.869109947644" d="M36 19h1v1H36z"/>
+  <path opacity="0.884816753927" d="M1 19h1v1H1z"/>
+  <path opacity="0.900523560209" d="M37 18h1v1H37z"/>
+  <path opacity="0.910994764398" d="M37 1h1v1H37z"/>
+  <path opacity="0.931937172775" d="M2 19h34v1H2z"/>
+  <path opacity="0.937172774869" d="M36 0h1v1H36z"/>
+  <path opacity="0.942408376963" d="M1 2h1v1H1zM37 2h1v1H37zM1 3h1v1H1zM37 3h1v1H37zM1 4h1v1H1zM33 4h1v1H33zM37 4h1v1H37zM1 5h1v1H1zM33 5h1v1H33zM37 5h1v1H37zM1 6h1v1H1zM33 6h1v1H33zM1 7h1v1H1zM33 7h1v1H33zM1 8h1v1H1zM33 8h1v1H33zM37 8h1v1H37zM1 9h1v1H1zM33 9h1v1H33zM37 9h1v1H37zM1 10h1v1H1zM33 10h1v1H33zM37 10h1v1H37zM1 11h1v1H1zM33 11h1v1H33zM1 12h1v1H1zM33 12h1v1H33zM1 13h1v1H1zM33 13h1v1H33zM1 14h1v1H1zM33 14h1v1H33zM1 15h1v1H1zM33 15h1v1H33zM37 15h1v1H37zM1 16h1v1H1zM37 16h1v1H37zM37 17h1v1H37z"/>
+  <path opacity="0.947643979058" d="M1 0h1v1H1zM37 11h1v1H37zM37 14h1v1H37zM1 17h1v1H1z"/>
+  <path opacity="0.968586387435" d="M40 6h1v1H40zM41 7h1v1H41zM0 18h1v1H0z"/>
+  <path opacity="0.973821989529" d="M0 1h1v1H0z"/>
+  <path opacity="0.979057591623" d="M41 12h1v1H41z"/>
+  <path opacity="0.994764397906" d="M40 13h1v1H40z"/>
+  <path d="M2 0h34v1H2zM1 1h36v1H1zM0 2h1v1H0zM36 2h1v1H36zM0 3h1v1H0zM36 3h1v1H36zM0 4h1v1H0zM4 4h29v1H4zM36 4h1v1H36zM0 5h1v1H0zM4 5h29v1H4zM36 5h1v1H36zM0 6h1v1H0zM4 6h29v1H4zM36 6h4v1H36zM0 7h1v1H0zM4 7h29v1H4zM36 7h5v1H36zM0 8h1v1H0zM4 8h29v1H4zM36 8h1v1H36zM40 8h2v1H40zM0 9h1v1H0zM4 9h29v1H4zM36 9h1v1H36zM40 9h2v1H40zM0 10h1v1H0zM4 10h29v1H4zM36 10h1v1H36zM40 10h2v1H40zM0 11h1v1H0zM4 11h29v1H4zM36 11h1v1H36zM40 11h2v1H40zM0 12h1v1H0zM4 12h29v1H4zM36 12h5v1H36zM0 13h1v1H0zM4 13h29v1H4zM36 13h4v1H36zM0 14h1v1H0zM4 14h29v1H4zM36 14h1v1H36zM0 15h1v1H0zM4 15h29v1H4zM36 15h1v1H36zM0 16h1v1H0zM36 16h1v1H36zM0 17h1v1H0zM36 17h1v1H36zM1 18h36v1H1z"/>
+</svg>
