@@ -222,6 +222,7 @@ html.theme-glass .statusbar {
           backdrop-filter: blur(16px) saturate(150%);
   border-bottom: 1px solid var(--g-edge-soft);
   color: var(--text);
+  font-size: 12px;
   text-shadow: none;
   justify-content: flex-start;
   padding: 0 14px;
@@ -243,13 +244,24 @@ html.theme-glass .statusbar .carrier-name { display: none; }
 html.theme-glass .sb-left { order: 2; gap: 6px; }
 html.theme-glass .battery {
   order: 3;
+  width: 24px;
+  height: 11px;
   margin-left: 8px;
+  margin-right: 0;
   border-color: var(--text);
+  box-shadow: none;
 }
-html.theme-glass .battery::after { background: var(--text); }
-html.theme-glass .battery span { background: var(--text); }
-/* iOS 26 cellular: four solid bars (drop the iOS 6 faded fifth) */
-html.theme-glass .statusbar .signal i { background: var(--text); opacity: 1; }
+html.theme-glass .battery::after { top: 3px; height: 5px; background: var(--text); }
+html.theme-glass .battery span { background: var(--text); border-radius: 1px; }
+/* iOS 26 cellular: four rounded bars, independent of the five iOS 6 steps. */
+html.theme-glass .signal { height: 10px; }
+html.theme-glass .statusbar .signal i {
+  background: var(--text); border-radius: 1px; box-shadow: none;
+}
+html.theme-glass .statusbar .signal i:nth-child(1) { height: 4px; }
+html.theme-glass .statusbar .signal i:nth-child(2) { height: 6px; }
+html.theme-glass .statusbar .signal i:nth-child(3) { height: 8px; }
+html.theme-glass .statusbar .signal i:nth-child(4) { height: 10px; }
 html.theme-glass .statusbar .signal i:nth-child(5) { display: none; }
 /* Wi-Fi glyph — a masked SVG tinted with the status-bar text color */
 html.theme-glass .wifi {
@@ -631,7 +643,7 @@ html.theme-glass body {
 }
 html.theme-glass .content { padding: 10px 0 28px; }
 
-/* Profile: Glass keeps the centered masthead, not cytyle's icon-left header. */
+/* Profile: Glass uses a larger photo and more generous masthead spacing. */
 html.theme-glass .profile {
   display: block;
   text-align: center;

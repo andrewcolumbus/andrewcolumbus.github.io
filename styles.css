@@ -70,20 +70,22 @@ body {
   overflow: hidden;
 }
 
-/* ---------- Status bar ---------- */
+/* ---------- Status bar ----------
+   iOS 6 Settings uses a blue-tinted bar with pale, embossed glyphs.
+   Screenshot references and measurements: docs/ios6-reference-notes.md. */
 .statusbar {
   height: 20px;
-  background: linear-gradient(to bottom, #e9ebee 0%, #c8ccd2 100%);
-  border-bottom: 1px solid #9aa0a8;
+  background: linear-gradient(to bottom, #6d86a3 0%, #47617f 100%);
+  border-bottom: 1px solid #435c78;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #e4eaf2;
   position: relative;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.35);
 }
 .statusbar .sb-left { display: flex; align-items: center; gap: 5px; }
 .statusbar .carrier-logo {
@@ -94,22 +96,31 @@ body {
   position: absolute; left: 0; right: 0; text-align: center;
   font-weight: 700; pointer-events: none;
 }
-.signal { display: flex; align-items: flex-end; gap: 1px; height: 10px; }
-.signal i { width: 3px; background: #1a1a1a; border-radius: 1px; display: block; }
-.signal i:nth-child(1){ height: 4px; }
-.signal i:nth-child(2){ height: 6px; }
-.signal i:nth-child(3){ height: 8px; }
-.signal i:nth-child(4){ height: 10px; }
-.signal i:nth-child(5){ height: 10px; opacity: 0.3; }
+/* Five square-ended steps, with a distinct height for every bar. */
+.signal { display: flex; align-items: flex-end; gap: 1px; height: 11px; }
+.signal i {
+  width: 3px; display: block;
+  background: linear-gradient(to bottom, #f5f7fa, #c5d0df);
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+}
+.signal i:nth-child(1){ height: 3px; }
+.signal i:nth-child(2){ height: 5px; }
+.signal i:nth-child(3){ height: 7px; }
+.signal i:nth-child(4){ height: 9px; }
+.signal i:nth-child(5){ height: 11px; }
 .battery {
-  width: 24px; height: 11px; border: 1px solid #1a1a1a; border-radius: 2px;
-  position: relative; padding: 1px;
+  width: 21px; height: 10px; border: 1px solid currentColor; border-radius: 2px;
+  position: relative; padding: 1px; margin-right: 2px;
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.25);
 }
 .battery::after {
-  content: ""; position: absolute; right: -3px; top: 3px;
-  width: 2px; height: 5px; background: #1a1a1a; border-radius: 0 1px 1px 0;
+  content: ""; position: absolute; right: -3px; top: 2px;
+  width: 2px; height: 4px; background: currentColor; border-radius: 0 1px 1px 0;
 }
-.battery span { display: block; height: 100%; width: 82%; background: #1a1a1a; border-radius: 1px; }
+.battery span {
+  display: block; height: 100%; width: 82%;
+  background: linear-gradient(to bottom, #f5f7fa 0%, #dce4ee 45%, #afbed1 55%, #e4eaf2 100%);
+}
 /* Modern status-bar parts (Wi-Fi glyph + Dynamic Island) used only by the
    Liquid Glass / iOS 26 theme; the iOS 6 status bar never shows them. */
 .wifi, .dynamic-island { display: none; }
@@ -189,20 +200,13 @@ body {
 .content { padding: 4px 0 18px; }
 
 /* ---------- Profile header ----------
-   Modelled on the Cydia home page's masthead: a transparent, borderless block
-   with the app icon on the left and the title stack centred beside it. */
+   Photo, name and tagline share the screen's center line. */
 .profile {
-  /* grid, not flex: .name and .tagline are sibling <p>s with no wrapper, so
-     they need to stack in the second column beside the icon. */
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas: "avatar name" "avatar tagline";
-  align-items: center;
-  column-gap: 10px;
-  padding: 10px var(--gutter) 2px;
+  text-align: center;
+  padding: 14px var(--gutter) 6px;
 }
 .avatar {
-  width: 59px; height: 59px; flex: 0 0 auto; margin: 0;
+  width: 59px; height: 59px; flex: 0 0 auto; margin: 0 auto 8px;
   border-radius: 13px;
   background: linear-gradient(to bottom, #8fa3c4, #566a8e);
   box-shadow:
@@ -232,11 +236,6 @@ body {
   font-size: 15px; color: #4d4d70; margin: 2px 0 0;
   text-shadow: 0 1px 0 rgba(255,255,255,0.75);
 }
-/* the title stack sits to the right of the icon and centres itself, the way
-   Cydia's "Welcome to Cydia / by Jay Freeman" block does */
-.avatar { grid-area: avatar; }
-.profile .name { grid-area: name; text-align: center; }
-.profile .tagline { grid-area: tagline; text-align: center; }
 
 /* ---------- Grouped table view ----------
    cytyle: panel > label for the header, panel > fieldset for the group. */
@@ -378,11 +377,11 @@ a.cell.stacked:active .sub, a.cell.stacked.tapped .sub { color: rgba(255,255,255
 a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255,255,255,0.9); }
 
 /* iOS-era glossy app-icon tile: holds a logo image or an emoji.
-   cytyle sizes img.icon at 30px with a 5px margin, so the text column starts
-   40px in from the row's left edge - reproduced here with flex. */
+   Keep the 30px tile and 5px inset; use the ~10px icon-to-label gap seen in
+   iOS 6 Settings screenshots. See docs/ios6-reference-notes.md. */
 .app-icon {
   position: relative;
-  width: 30px; height: 30px; flex: 0 0 auto; margin: 0 5px 0 0;
+  width: 30px; height: 30px; flex: 0 0 auto; margin: 0 10px 0 0;
   border-radius: 6px; overflow: hidden; background: #fff;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 1px 1px rgba(0,0,0,0.14);
   display: flex; align-items: center; justify-content: center;
@@ -396,8 +395,14 @@ a.cell.stack-badge:active .sub, a.cell.stack-badge.tapped .sub { color: rgba(255
 .app-icon.emoji { font-size: 18px; line-height: 1; }
 .app-icon.emoji::after { display: none; }
 
-/* Rows carrying an icon: 5px + 30px + 5px puts the text column at 40px. */
-.cell.iconcell, .cell.stack-badge { padding-left: 5px; }
+/* 30px icon + 7px above/below gives the native 44px single-line row.
+   Longer descriptions expand naturally while sharing the same text column. */
+.cell.iconcell, .cell.stack-badge {
+  min-height: 44px;
+  padding-left: 5px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
 .cell.iconcell { align-items: center; }
 .cell.iconcell .cell-text { display: flex; flex-direction: column; min-width: 0; }
 .cell.iconcell .label { font-weight: bold; }
